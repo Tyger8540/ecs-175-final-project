@@ -1,9 +1,7 @@
-# ECS 175 - Assignment 3
-
-*Instructions:* [https://canvas.ucdavis.edu/courses/912181/assignments/1267411](https://canvas.ucdavis.edu/courses/912181/assignments/1267411)
+# ECS 175 - Final Project
 
 ## Hosting and running the project
-The assignment is a simple HTML+JS website with minimal dependencies. To run it we recommend using one of the following methods. You are free to use alternative means to host the site. Before submitting, make sure it works with either of the methods shown here as there could be slight differences in how the web servers handle paths and file loading.
+The project is a simple HTML+JS website with minimal dependencies. To run it we recommend using one of the following methods. You are free to use alternative means to host the site.
 
 ### Using Python
 If you have python installed on your system you can use the built-in HTTP Server that ships with it to host the project.
