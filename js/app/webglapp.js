@@ -243,6 +243,88 @@ class WebGlApp
             view_dirty = true
         }
 
+        // Control - Move Forward with W
+        if (Input.isKeyDown('w')) {
+            // Create translation forward
+            let move_speed = 5.0
+            let translation = vec3.scale(vec3.create(), this.forward, -move_speed * delta_time)
+
+            // Translate the eye
+            this.eye = vec3.add(vec3.create(), this.eye, translation)
+
+            // Set dirty flag to trigger view matrix updates
+            view_dirty = true
+        }
+
+        // Control - Move Backward with S
+        if (Input.isKeyDown('s')) {
+            // Create translation forward
+            let move_speed = 5.0
+            let translation = vec3.scale(vec3.create(), this.forward, move_speed * delta_time)
+
+            // Translate the eye
+            this.eye = vec3.add(vec3.create(), this.eye, translation)
+
+            // Set dirty flag to trigger view matrix updates
+            view_dirty = true
+        }
+
+        // Control - Move Left with A
+        if (Input.isKeyDown('a')) {
+            // Create translation forward
+            let move_speed = 5.0
+            let translation = vec3.scale(vec3.create(), this.right, -move_speed * delta_time)
+
+            // Translate both eye and center in parallel
+            this.eye = vec3.add(vec3.create(), this.eye, translation)
+            this.center = vec3.add(vec3.create(), this.center, translation)
+
+            // Set dirty flag to trigger view matrix updates
+            view_dirty = true
+        }
+
+        // Control - Move Right with D
+        if (Input.isKeyDown('d')) {
+            // Create translation forward
+            let move_speed = 5.0
+            let translation = vec3.scale(vec3.create(), this.right, move_speed * delta_time)
+
+            // Translate both eye and center in parallel
+            this.eye = vec3.add(vec3.create(), this.eye, translation)
+            this.center = vec3.add(vec3.create(), this.center, translation)
+
+            // Set dirty flag to trigger view matrix updates
+            view_dirty = true
+        }
+
+        // Control - Move Up with Space
+        if (Input.isKeyDown(' ')) {
+            // Create translation forward
+            let move_speed = 5.0
+            let translation = vec3.scale(vec3.create(), this.up, move_speed * delta_time)
+
+            // Translate both eye and center in parallel
+            this.eye = vec3.add(vec3.create(), this.eye, translation)
+            this.center = vec3.add(vec3.create(), this.center, translation)
+
+            // Set dirty flag to trigger view matrix updates
+            view_dirty = true
+        }
+
+        // Control - Move Down with Left Shift
+        if (Input.isKeyDown('Shift')) {
+            // Create translation forward
+            let move_speed = 5.0
+            let translation = vec3.scale(vec3.create(), this.up, -move_speed * delta_time)
+
+            // Translate both eye and center in parallel
+            this.eye = vec3.add(vec3.create(), this.eye, translation)
+            this.center = vec3.add(vec3.create(), this.center, translation)
+
+            // Set dirty flag to trigger view matrix updates
+            view_dirty = true
+        }
+
         // Update view matrix if needed
         if (view_dirty) {
             // Update Forward, Right, and Up vectors
