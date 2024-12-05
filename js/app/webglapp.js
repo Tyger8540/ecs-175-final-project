@@ -9,6 +9,7 @@ import * as quat from '../lib/glmatrix/quat.js'
 
 import { OBJLoader } from '../../assignment3.objloader.js'
 import { Scene, SceneNode } from './scene.js'
+import { ProcGen } from '../../procgen.js'
 
 /**
  * @Class
@@ -253,6 +254,10 @@ class WebGlApp
 
             // Translate the eye
             this.eye = vec3.add(vec3.create(), this.eye, translation)
+            this.center = vec3.add(vec3.create(), this.center, translation)
+
+            let procGen = new(ProcGen)
+            procGen.createNoise()
 
             // Set dirty flag to trigger view matrix updates
             view_dirty = true
@@ -265,6 +270,7 @@ class WebGlApp
 
             // Translate the eye
             this.eye = vec3.add(vec3.create(), this.eye, translation)
+            this.center = vec3.add(vec3.create(), this.center, translation)
 
             // Set dirty flag to trigger view matrix updates
             view_dirty = true
