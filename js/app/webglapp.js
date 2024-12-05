@@ -311,8 +311,8 @@ class WebGlApp
             view_dirty = true
         }
 
-        // Control - Move Down with Left Shift
-        if (Input.isKeyDown('Shift')) {
+        // Control - Move Down with c
+        if (Input.isKeyDown('c')) {
             // Create translation forward
             let move_speed = 5.0
             let translation = vec3.scale(vec3.create(), this.up, -move_speed * delta_time)
