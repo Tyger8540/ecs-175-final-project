@@ -243,10 +243,12 @@ class WebGlApp
             view_dirty = true
         }
 
+        var slider = document.getElementById("movementSpeedSlider")
+        let move_speed = slider.value
+
         // Control - Move Forward with W
         if (Input.isKeyDown('w')) {
             // Create translation forward
-            let move_speed = 5.0
             let translation = vec3.scale(vec3.create(), this.forward, -move_speed * delta_time)
 
             // Translate the eye
@@ -259,7 +261,6 @@ class WebGlApp
         // Control - Move Backward with S
         if (Input.isKeyDown('s')) {
             // Create translation forward
-            let move_speed = 5.0
             let translation = vec3.scale(vec3.create(), this.forward, move_speed * delta_time)
 
             // Translate the eye
@@ -272,7 +273,6 @@ class WebGlApp
         // Control - Move Left with A
         if (Input.isKeyDown('a')) {
             // Create translation forward
-            let move_speed = 5.0
             let translation = vec3.scale(vec3.create(), this.right, -move_speed * delta_time)
 
             // Translate both eye and center in parallel
@@ -286,7 +286,6 @@ class WebGlApp
         // Control - Move Right with D
         if (Input.isKeyDown('d')) {
             // Create translation forward
-            let move_speed = 5.0
             let translation = vec3.scale(vec3.create(), this.right, move_speed * delta_time)
 
             // Translate both eye and center in parallel
@@ -300,7 +299,6 @@ class WebGlApp
         // Control - Move Up with Space
         if (Input.isKeyDown(' ')) {
             // Create translation forward
-            let move_speed = 5.0
             let translation = vec3.scale(vec3.create(), this.up, move_speed * delta_time)
 
             // Translate both eye and center in parallel
@@ -311,10 +309,9 @@ class WebGlApp
             view_dirty = true
         }
 
-        // Control - Move Down with c
+        // Control - Move Down with C
         if (Input.isKeyDown('c')) {
             // Create translation forward
-            let move_speed = 5.0
             let translation = vec3.scale(vec3.create(), this.up, -move_speed * delta_time)
 
             // Translate both eye and center in parallel
