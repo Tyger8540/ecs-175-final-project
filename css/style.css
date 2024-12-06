@@ -8,7 +8,9 @@
 html, body {
     height: 100%;
     margin: 0;
-    overflow: hidden;
+    /*overflow: hidden;*/
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 h1 {
@@ -34,7 +36,7 @@ a {
 }
 
 #app {
-    height: 100vh;
+    height: 200vh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -107,6 +109,13 @@ a {
     height: 25px;
     background: #CA3C25;
     cursor: pointer;
+  }
+
+  #noise-canvas-container {
+    display: flex; /* Ensures the canvases are laid out horizontally by default */
+    gap: 50px; /* Adds 20px of space between canvases */
+    justify-content: center; /* Centers the canvases within the container */
+    margin: 20px; /* Adds space around the entire container */
   }
 
 

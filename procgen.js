@@ -5,16 +5,16 @@ import {createNoise2D} from "https://unpkg.com/simplex-noise@4.0.1/dist/esm/simp
 class ProcGen
 {
 
-    createNoise() {
+    createNoise(canvasId) {
         let gen = createNoise2D();
         function noise(nx, ny) {
             // Rescale from -1.0:+1.0 to 0.0:1.0
             return gen(nx, ny) / 2 + 0.5;
         }
           
-        let height = 1000;
-        let width = 1000;
-        let canvas = document.getElementById("noise-canvas");
+        let height = 250;
+        let width = 250;
+        let canvas = document.getElementById(canvasId);
         canvas.width = width;
         canvas.height = height;
         let ctx = canvas.getContext("2d");
