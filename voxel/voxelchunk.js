@@ -113,7 +113,7 @@ class VoxelChunk {
         // console.log(a_color) TODO: figure out why a_color = -1
         if (a_color >= 0) {
             gl.enableVertexAttribArray(a_color)
-            gl.vertexAttribPointer(a_position, 3, gl.FLOAT, false, 0, this.vertices.length / 2)
+            gl.vertexAttribPointer(a_color, 3, gl.FLOAT, false, 0, this.vertices.length / 2)
         }
 
         gl.bindVertexArray( null )
