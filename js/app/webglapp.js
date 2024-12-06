@@ -81,6 +81,7 @@ class WebGlApp
         }
 
         this.chunkManager = new ChunkManager(gl, this.shaders[4], 1)
+        this.chunkManager.regenerateAllBuffers()
     }  
 
     /**

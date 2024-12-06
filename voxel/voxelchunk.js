@@ -1,6 +1,7 @@
 import * as VoxelType from './voxeltypes.js'
 import { Object3D } from '../assignment3.object3d.js'
 import { VOXEL_AIR } from './voxeltypes.js'
+import * as mat4 from '../js/lib/glmatrix/mat4.js'
 
 const CHUNK_SIZE = 16
 
@@ -34,8 +35,8 @@ class VoxelChunk {
 
     regenerateBuffers(gl, shader) {
         // create vertex and index arrays
-        const vertices = []
-        const indices = []
+        this.vertices = []
+        this.indices = []
         for (let z = 0; z < CHUNK_SIZE; z++) {
             for (let y = 0; y < CHUNK_SIZE; y++) {
                 for (let x = 0; x < CHUNK_SIZE; x++) {
@@ -57,16 +58,16 @@ class VoxelChunk {
                     ]
                     
                     // push newIndices flattened, relative to indexOffset
-                    const indexOffset = vertices.length
+                    const indexOffset = this.vertices.length
                     newIndices.forEach(arr => {
                         const toPush = [arr[0] + indexOffset, arr[1] + indexOffset, arr[2] + indexOffset]
-                        indices.push(toPush.flat())
+                        this.indices.push(toPush.flat())
                     })
 
                     // push newVertices flattened, relative to (x, y, z)
                     newVertices.forEach(arr => {
                         const toPush = [arr[0] + x, arr[1] + y, arr[2] + z]
-                        indices.push(toPush.flat())
+                        this.indices.push(toPush.flat())
                     })
                 }
             }
@@ -82,23 +83,22 @@ class VoxelChunk {
                         return
                     }
 
-                    indices.push(voxel.color.flat())
+                    this.indices.push(voxel.color.flat())
                 }
             }
         }
 
         // Creates vertex buffer object for vertex data
         gl.bindBuffer( gl.ARRAY_BUFFER, this.vertices_buffer )
-        gl.bufferData( gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW )
+        gl.bufferData( gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW )
         gl.bindBuffer( gl.ARRAY_BUFFER, null );
 
         // Creates index buffer object for vertex data
         gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.index_buffer )
-        gl.bufferData( gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(indices), gl.STATIC_DRAW )
+        gl.bufferData( gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.indices), gl.STATIC_DRAW )
         gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, null )
 
         // Sets up a vertex attribute object that is used during rendering to automatically tell WebGL how to access our buffers
-        // TODO: implement shader
         gl.bindVertexArray(this.vertex_array_object);
         gl.bindBuffer( gl.ARRAY_BUFFER, this.vertices_buffer )
 
@@ -111,15 +111,39 @@ class VoxelChunk {
         let a_color = shader.getAttributeLocation( 'a_color' )
         if (a_color >= 0) {
             gl.enableVertexAttribArray(a_color)
-            gl.vertexAttribPointer(a_position, this.num_components_vec3, gl.FLOAT, false, 0, vertices.length / 2)
+            gl.vertexAttribPointer(a_position, this.num_components_vec3, gl.FLOAT, false, 0, this.vertices.length / 2)
         }
 
         gl.bindVertexArray( null )
         gl.bindBuffer( gl.ARRAY_BUFFER, null )
     }
 
-    // TODO: make func to render (steal from object3d)
+    render(gl, xPos, yPos)
+    {
+        // Bind vertex array object
+        gl.bindVertexArray( this.vertex_array_object )
+
+        // Bind index buffer
+        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.index_buffer )
+
+        // set up model matrix
+        const model_matrix = mat4.identity(mat4.create())
+        mat4.translate(model_matrix, model_matrix, [xPos, yPos, 0])
+
+        // Set up shader
+        this.shader.use( )
+        this.shader.setUniform4x4f('u_m', model_matrix)
+
+        // Draw the element
+        gl.drawElements( this.draw_mode, this.indices.length, gl.UNSIGNED_INT, 0 )
+
+        // Clean Up
+        gl.bindVertexArray( null )
+        gl.bindBuffer( gl.ARRAY_BUFFER, null )
+        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, null )
+        this.shader.unuse( )
+    }
 
 }
 
-export default VoxelChunk
+export { VoxelChunk, CHUNK_SIZE }

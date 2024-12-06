@@ -1,4 +1,4 @@
-import VoxelChunk from './voxelchunk.js'
+import { VoxelChunk, CHUNK_SIZE } from './voxelchunk.js'
 
 class ChunkManager {
     /**
@@ -12,13 +12,15 @@ class ChunkManager {
         this.chunks = Array(size * size).fill(new VoxelChunk(gl, shader))
     }
 
-    setVoxel(globalX, globalY, globalZ, voxelId) {
-        const chunkIndex = Math.floor(globalY / CHUNK_SIZE) * size + Math.floor(globalX / CHUNK_SIZE)
+    getChunkIndex(globalX, globalY) {
+        return Math.floor(globalY / CHUNK_SIZE) * this.size + Math.floor(globalX / CHUNK_SIZE)
+    }
 
-        const localX = globalX % size
-        const localY = globalY % size
-        const localZ = globalZ % size
-        this.chunks[chunkIndex].setVoxel(localX, localY, localZ, voxelId)
+    setVoxel(globalX, globalY, globalZ, voxelId) {
+        const localX = globalX % CHUNK_SIZE
+        const localY = globalY % CHUNK_SIZE
+        const localZ = globalZ % CHUNK_SIZE
+        this.chunks[this.getChunkIndex(globalX, globalY)].setVoxel(localX, localY, localZ, voxelId)
     }
 
     regenerateAllBuffers() {
@@ -28,7 +30,15 @@ class ChunkManager {
     }
 
     render(gl) {
-        
+        for (let chunkJ = 0; chunkJ < this.size; chunkJ++) {
+            for (let chunkI = 0; chunkI < this.size; chunkI++) {
+                const globalX = chunkI * CHUNK_SIZE
+                const globalY = chunkJ * CHUNK_SIZE
+                const chunkIndex = this.getChunkIndex(globalX, globalY)
+                const chunk = this.chunks[chunkIndex]
+                chunk.render(gl, globalX, globalY)
+            }
+        }
     }
 }
 
