@@ -58,7 +58,7 @@ class VoxelChunk {
                     ]
 
                     // push newIndices flattened, relative to indexOffset
-                    const indexOffset = this.vertices.length
+                    const indexOffset = this.vertices.length / 3
                     newIndices.forEach(arr => {
                         const toPush = [arr[0] + indexOffset, arr[1] + indexOffset, arr[2] + indexOffset]
                         this.indices.push(...toPush)
