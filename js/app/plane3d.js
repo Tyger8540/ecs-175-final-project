@@ -12,10 +12,10 @@ class Plane extends Object3D {
     constructor( gl, shader, box_scale = [1,1,1] ) 
     {
         let vertices = [
-            1.000000, -1.000000, -1.000000,
-            1.000000, -1.000000, 1.000000,
-            -1.000000, -1.000000, -1.000000,
-            -1.000000, -1.000000, 1.000000
+            100.000000, -1.000000, -100.000000,
+            100.000000, -1.000000, 100.000000,
+            -100.000000, -1.000000, -100.000000,
+            -100.000000, -1.000000, 100.000000
         ]
 
         for (let i = 0; i < vertices.length; i++) {
@@ -23,13 +23,11 @@ class Plane extends Object3D {
         }
 
         let indices = [
-            0, 1,
-            0, 2,
-            1, 3,
-            2, 3,
+            0, 1, 2,
+            1, 2, 3
         ]
         
-        super( gl, shader, vertices, indices, gl.LINES )
+        super( gl, shader, vertices, indices, gl.TRIANGLES )
     }
 
     /**

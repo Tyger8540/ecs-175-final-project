@@ -36,7 +36,7 @@ class WebGlApp
         // Store the shader(s)
         this.shaders = shaders // Collection of all shaders
         // this.box_shader = this.shaders[0]
-        this.plane_shader = this.shaders[0]
+        this.plane_shader = this.shaders[5]
         this.light_shader = this.shaders[this.shaders.length - 1]
         this.active_shader = 1
         
