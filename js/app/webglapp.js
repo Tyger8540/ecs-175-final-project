@@ -10,6 +10,7 @@ import * as quat from '../lib/glmatrix/quat.js'
 import { OBJLoader } from '../../assignment3.objloader.js'
 import { Scene, SceneNode } from './scene.js'
 import { ProcGen } from '../../procgen.js'
+import ChunkManager from '../../voxel/chunkmanager.js'
 
 /**
  * @Class
@@ -79,6 +80,7 @@ class WebGlApp
             shader.unuse()
         }
 
+        this.chunkManager = new ChunkManager(gl, this.active_shader, 1) // TODO: replace shader w/ a new one
     }  
 
     /**
@@ -448,6 +450,9 @@ class WebGlApp
         // Render the box
         // This will use the MVP that was passed to the shader
         this.box.render( gl )
+
+        // render chunk manager
+        this.chunkManager.render(gl)
 
         // Render the scene
         if (this.scene) this.scene.render( gl )
