@@ -73,6 +73,16 @@
         <div id="canvas-container">
             <canvas id="canvas"></canvas>
         </div>
+        <div id="noise-canvas-container">
+            <canvas id="noise-canvas"></canvas>
+            <script type="module" src="procgen.js"></script>
+            <script type="module">
+                import { ProcGen } from './procgen.js';
+
+                const procGen = new ProcGen();
+                procGen.createNoise();
+            </script>
+        </div>
     </div>
     <noscript>You need to enable JavaScript to view the full site.</noscript>
     <script type="module" src="js/main.js"></script>

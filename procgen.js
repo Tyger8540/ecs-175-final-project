@@ -12,17 +12,81 @@ class ProcGen
             return gen(nx, ny) / 2 + 0.5;
         }
           
-        let value = [];
-        let height = 2;
-        let width = 2;
+        let height = 1000;
+        let width = 1000;
+        let canvas = document.getElementById("noise-canvas");
+        canvas.width = width;
+        canvas.height = height;
+        let ctx = canvas.getContext("2d");
+        let imageData = ctx.createImageData(width, height);
+
+        let frequency = 10.0;
+        let total = 0;
+
         for (let y = 0; y < height; y++) {
-            value[y] = [];
             for (let x = 0; x < width; x++) {      
                 let nx = x/width - 0.5, ny = y/height - 0.5;
-                value[y][x] = noise(nx, ny);
+                let e = 1 * noise(1 * nx, 1 * ny) + 0.5 * noise(2 * nx, 2 * ny) + 0.25 * noise(4 * nx, 4 * ny);
+                e = e / (1 + 0.5 + 0.25);
+                let value = Math.pow(e, 2);
+                // let value = Math.round(e * 32) / 32;
+                total += value;
+
+
+                let r, g, b;
+                // Convert noise value to water if below threshold
+                if (value < 0.1) {
+                    // water
+                    r = 0;
+                    g = 0;
+                    b = 255;
+                }
+                else if (value < 0.2) {
+                    // sand
+                    r = 247;
+                    g = 226;
+                    b = 151;
+                }
+                else if (value < 0.4) {
+                    // grass
+                    r = 0;
+                    g = 255;
+                    b = 0;
+                }
+                else if (value < 0.6) {
+                    // stone
+                    r = 169;
+                    g = 183;
+                    b = 199;
+                }
+                else {
+                    // snow
+                    r = 255;
+                    g = 255;
+                    b = 255;
+                }
+
+                // Convert noise value to grayscale (0-255)
+                // color = Math.floor(value * 255);
+
+                // // Apply threshold to make color either black or white
+                // let color;
+                // if (value > 0.25) {
+                //     color = 255;
+                // } else {
+                //     color = 0;
+                // }
+
+
+                let index = (y * width + x) * 4; // RGBA index
+                imageData.data[index] = r;       // Red
+                imageData.data[index + 1] = g;   // Green
+                imageData.data[index + 2] = b;   // Blue
+                imageData.data[index + 3] = 255;     // Alpha
             }
         }
-        console.log(value)
+        // console.log("Avg Value: " + total / (width * height));
+        ctx.putImageData(imageData, 0, 0);
     }
     
 }
