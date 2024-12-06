@@ -80,7 +80,7 @@ class WebGlApp
             shader.unuse()
         }
 
-        this.chunkManager = new ChunkManager(gl, this.active_shader, 1) // TODO: replace shader w/ a new one
+        this.chunkManager = new ChunkManager(gl, this.shaders[4], 1)
     }  
 
     /**

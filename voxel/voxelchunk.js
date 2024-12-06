@@ -40,7 +40,8 @@ class VoxelChunk {
             for (let y = 0; y < CHUNK_SIZE; y++) {
                 for (let x = 0; x < CHUNK_SIZE; x++) {
                     // return if voxel at (x, y, z) is air
-                    if (this.getVoxel(x, y, z).id == VOXEL_AIR) {
+                    const voxel = this.getVoxel(x, y, z)
+                    if (voxel.id == VOXEL_AIR) {
                         return
                     }
 
@@ -71,6 +72,21 @@ class VoxelChunk {
             }
         }
 
+        // add color to vertex buffer
+        for (let z = 0; z < CHUNK_SIZE; z++) {
+            for (let y = 0; y < CHUNK_SIZE; y++) {
+                for (let x = 0; x < CHUNK_SIZE; x++) {
+                    // return if voxel at (x, y, z) is air
+                    const voxel = this.getVoxel(x, y, z)
+                    if (voxel.id == VOXEL_AIR) {
+                        return
+                    }
+
+                    indices.push(voxel.color.flat())
+                }
+            }
+        }
+
         // Creates vertex buffer object for vertex data
         gl.bindBuffer( gl.ARRAY_BUFFER, this.vertices_buffer )
         gl.bufferData( gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW )
@@ -86,26 +102,23 @@ class VoxelChunk {
         gl.bindVertexArray(this.vertex_array_object);
         gl.bindBuffer( gl.ARRAY_BUFFER, this.vertices_buffer )
 
-        return
-        let location = shader.getAttributeLocation( 'a_position' )
-        if (location >= 0) {
-            gl.enableVertexAttribArray( location )
-            stride = 0, offset = 0
-            gl.vertexAttribPointer( location, this.num_components_vec3, gl.FLOAT, false, 0, 0 )
+        let a_position = shader.getAttributeLocation( 'a_position' )
+        if (a_position >= 0) {
+            gl.enableVertexAttribArray(a_position)
+            gl.vertexAttribPointer(a_position, this.num_components_vec3, gl.FLOAT, false, 0, 0)
         }
 
-        location = shader.getAttributeLocation( 'a_normal' )
-        if (location >= 0) {
-            gl.enableVertexAttribArray( location )
-            stride = 0, offset = (this.vertices.length / 2) * Float32Array.BYTES_PER_ELEMENT
-            gl.vertexAttribPointer( location, this.num_components_vec3, gl.FLOAT, false, stride, offset )
+        let a_color = shader.getAttributeLocation( 'a_color' )
+        if (a_color >= 0) {
+            gl.enableVertexAttribArray(a_color)
+            gl.vertexAttribPointer(a_position, this.num_components_vec3, gl.FLOAT, false, 0, vertices.length / 2)
         }
 
         gl.bindVertexArray( null )
         gl.bindBuffer( gl.ARRAY_BUFFER, null )
     }
 
-    // TODO: make func to render
+    // TODO: make func to render (steal from object3d)
 
 }
 

@@ -9,7 +9,7 @@ class ChunkManager {
         this.gl = gl
         this.shader = shader
         this.size = size
-        this.chunks = Array(size * size).fill(new VoxelChunk(gl))
+        this.chunks = Array(size * size).fill(new VoxelChunk(gl, shader))
     }
 
     setVoxel(globalX, globalY, globalZ, voxelId) {
