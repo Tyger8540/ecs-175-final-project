@@ -12,6 +12,7 @@ import { OBJLoader } from '../../assignment3.objloader.js'
 import { Scene, SceneNode } from './scene.js'
 import { ProcGen } from '../../procgen.js'
 import ChunkManager from '../../voxel/chunkmanager.js'
+import * as VoxelType from '../../voxel/voxeltypes.js'
 
 /**
  * @Class
@@ -84,6 +85,10 @@ class WebGlApp
         }
 
         this.chunkManager = new ChunkManager(gl, this.shaders[4], 1)
+        this.chunkManager.regenerateAllBuffers()
+
+        // TEST CODE BELOW
+        this.chunkManager.setVoxel(0, 0, 0, VoxelType.VOXEL_GRASS)
         this.chunkManager.regenerateAllBuffers()
     }  
 

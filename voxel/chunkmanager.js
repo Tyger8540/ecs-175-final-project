@@ -6,8 +6,6 @@ class ChunkManager {
      * @param {Number} size How many chunks long the world should be
      */
     constructor(gl, shader, size) {
-        this.gl = gl
-        this.shader = shader
         this.size = size
         this.chunks = Array(size * size).fill(new VoxelChunk(gl, shader))
     }
@@ -25,7 +23,7 @@ class ChunkManager {
 
     regenerateAllBuffers() {
         for (let chunk of this.chunks) {
-            chunk.regenerateBuffers(this.gl, this.shader)
+            chunk.regenerateBuffers(chunk.gl, chunk.shader)
         }
     }
 
