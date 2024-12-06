@@ -207,14 +207,14 @@ class WebGlApp
         let view_dirty = false
 
         // Control - Zoom
-        if (Input.isMouseDown(2)) {
-            // Scale camera position
-            let translation = vec3.scale(vec3.create(), this.forward, -Input.getMouseDy() * delta_time)
-            this.eye = vec3.add(vec3.create(), this.eye, translation)
+        // if (Input.isMouseDown(2)) {
+        //     // Scale camera position
+        //     let translation = vec3.scale(vec3.create(), this.forward, -Input.getMouseDy() * delta_time)
+        //     this.eye = vec3.add(vec3.create(), this.eye, translation)
 
-            // Set dirty flag to trigger view matrix updates
-            view_dirty = true
-        }
+        //     // Set dirty flag to trigger view matrix updates
+        //     view_dirty = true
+        // }
 
         // Control - Rotate
         if (Input.isMouseDown(0) && !Input.isKeyDown(' ')) {
@@ -230,19 +230,19 @@ class WebGlApp
         }
 
         // Control - Pan
-        if (Input.isMouseDown(1) || (Input.isMouseDown(0) && Input.isKeyDown(' '))) {
-            // Create translation on two view-aligned axes
-            let translation = vec3.add(vec3.create(), 
-                vec3.scale(vec3.create(), this.right, -0.75 * Input.getMouseDx() * delta_time),
-                vec3.scale(vec3.create(), this.up, 0.75 * Input.getMouseDy() * delta_time)
-            )
+        // if (Input.isMouseDown(1) || (Input.isMouseDown(0) && Input.isKeyDown(' '))) {
+        //     // Create translation on two view-aligned axes
+        //     let translation = vec3.add(vec3.create(), 
+        //         vec3.scale(vec3.create(), this.right, -0.75 * Input.getMouseDx() * delta_time),
+        //         vec3.scale(vec3.create(), this.up, 0.75 * Input.getMouseDy() * delta_time)
+        //     )
 
-            // Translate both eye and center in parallel
-            this.eye = vec3.add(vec3.create(), this.eye, translation)
-            this.center = vec3.add(vec3.create(), this.center, translation)
+        //     // Translate both eye and center in parallel
+        //     this.eye = vec3.add(vec3.create(), this.eye, translation)
+        //     this.center = vec3.add(vec3.create(), this.center, translation)
 
-            view_dirty = true
-        }
+        //     view_dirty = true
+        // }
 
         var slider = document.getElementById("movementSpeedSlider")
         let move_speed = slider.value
