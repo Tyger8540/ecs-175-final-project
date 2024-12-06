@@ -35,7 +35,7 @@
             <div class="setting">
                 <h3>Frequency</h3>
                 <div class="setting-item-container">
-                    <input type="range" min="5" max="20" value="5" class="slider" id="frequencySlider">
+                    <input type="range" min="1" max="5" value="1" class="slider" id="frequencySlider">
                 </div>
                 <p>Value: <span id="frequencyValue"></span></p>
                 <script>
@@ -48,6 +48,7 @@
                     }
                     </script>
             </div>
+            <button class="button" onclick="generateWorld()">Generate World</button>
         </div>
 
         <div id="canvas-container">
@@ -59,15 +60,6 @@
             <canvas id="noise-canvas-2"></canvas>
             <canvas id="noise-canvas-3"></canvas>
         </div>
-        <script type="module" src="procgen.js"></script>
-        <script type="module">
-            import { ProcGen } from './procgen.js';
-
-            const procGen = new ProcGen();
-            procGen.createNoise("noise-canvas-height");
-            procGen.createNoise("noise-canvas-2");
-            procGen.createNoise("noise-canvas-3");
-        </script>
 
         <div class="settings-container">
             <div class="setting">
@@ -111,6 +103,29 @@
     </div>
     <noscript>You need to enable JavaScript to view the full site.</noscript>
     <script type="module" src="js/main.js"></script>
+    <script type="module">
+        import { ProcGen } from './procgen.js';
+
+        const procGen = new ProcGen();
+
+        // Reusable function for generating noise maps
+        function generateNoiseMaps() {
+            procGen.createNoise("noise-canvas-height");
+            procGen.createNoise("noise-canvas-2");
+            procGen.createNoise("noise-canvas-3");
+        }
+
+        // Generate noise maps on initial load
+        generateNoiseMaps();
+
+        // Function to regenerate the world
+        function generateWorld() {
+            generateNoiseMaps(); // Reuse the same logic
+        }
+
+        // Attach the generateWorld function to the global scope
+        window.generateWorld = generateWorld;
+    </script>
 </body>
 
 </html>

@@ -20,13 +20,15 @@ class ProcGen
         let ctx = canvas.getContext("2d");
         let imageData = ctx.createImageData(width, height);
 
-        let frequency = 10.0;
+        var frequencySlider = document.getElementById("frequencySlider")
+        let frequency = frequencySlider.value
+
         let total = 0;
 
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {      
                 let nx = x/width - 0.5, ny = y/height - 0.5;
-                let e = 1 * noise(1 * nx, 1 * ny) + 0.5 * noise(2 * nx, 2 * ny) + 0.25 * noise(4 * nx, 4 * ny);
+                let e = 1 * noise(1 * frequency * nx, 1 * ny) + 0.5 * noise(2 * frequency * nx, 2 * ny) + 0.25 * noise(4 * frequency * nx, 4 * ny);
                 e = e / (1 + 0.5 + 0.25);
                 let value = Math.pow(e, 2);
                 // let value = Math.round(e * 32) / 32;
