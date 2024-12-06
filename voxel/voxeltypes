@@ -1,0 +1,9 @@
+class VoxelType {
+    constructor(id, color) {
+        this.id = id
+        this.color = color
+    }
+}
+
+const VOXEL_AIR = VoxelType(0, null)
+const VOXEL_GRASS = VoxelType(1, [0, 255, 0])
