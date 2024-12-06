@@ -8,9 +8,9 @@
 html, body {
     height: 100%;
     margin: 0;
-    /*overflow: hidden;*/
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden;
+    /* overflow-x: hidden;
+    overflow-y: auto; */
 }
 
 h1 {
