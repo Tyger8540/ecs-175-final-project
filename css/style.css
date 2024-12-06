@@ -79,6 +79,16 @@ a {
     color: #CA3C25;
 }
 
+.slider-settings-container {
+    background-color: #fff8e9;
+    display: flex;
+    width: 100%;
+    padding: 0.25em;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
 /* Source: https://www.w3schools.com/howto/howto_js_rangeslider.asp */
 .slider {
     appearance: none;

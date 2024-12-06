@@ -15,6 +15,60 @@
                     href="https://github.com/Tyger8540/ecs-175-final-project" target="_blank">Documentation</a></h2><br>
             <h3>Ty Matson | Ben Nelson | Jason Zhou</h3>
         </div>
+        <div class="slider-settings-container">
+            <div class="setting">
+                <h3>Movement Speed</h3>
+                <div class="setting-item-container">
+                    <input type="range" min="5" max="20" value="5" class="slider" id="movementSpeedSlider">
+                </div>
+                <p>Value: <span id="movementSpeedValue"></span></p>
+                <script>
+                    var movementSpeedSlider = document.getElementById("movementSpeedSlider");
+                    var movementSpeedOutput = document.getElementById("movementSpeedValue");
+                    movementSpeedOutput.innerHTML = movementSpeedSlider.value;
+                    
+                    movementSpeedSlider.oninput = function() {
+                        movementSpeedOutput.innerHTML = this.value;
+                    }
+                    </script>
+            </div>
+            <div class="setting">
+                <h3>Frequency</h3>
+                <div class="setting-item-container">
+                    <input type="range" min="5" max="20" value="5" class="slider" id="frequencySlider">
+                </div>
+                <p>Value: <span id="frequencyValue"></span></p>
+                <script>
+                    var frequencySlider = document.getElementById("frequencySlider");
+                    var frequencyOutput = document.getElementById("frequencyValue");
+                    frequencyOutput.innerHTML = frequencySlider.value;
+                    
+                    frequencySlider.oninput = function() {
+                        frequencyOutput.innerHTML = this.value;
+                    }
+                    </script>
+            </div>
+        </div>
+
+        <div id="canvas-container">
+            <canvas id="canvas"></canvas>
+        </div>
+
+        <div id="noise-canvas-container">
+            <canvas id="noise-canvas-height"></canvas>
+            <canvas id="noise-canvas-2"></canvas>
+            <canvas id="noise-canvas-3"></canvas>
+        </div>
+        <script type="module" src="procgen.js"></script>
+        <script type="module">
+            import { ProcGen } from './procgen.js';
+
+            const procGen = new ProcGen();
+            procGen.createNoise("noise-canvas-height");
+            procGen.createNoise("noise-canvas-2");
+            procGen.createNoise("noise-canvas-3");
+        </script>
+
         <div class="settings-container">
             <div class="setting">
                 <h3>3D Scene</h3>
@@ -52,42 +106,7 @@
                     <select id="selectSceneNodeSelect" disabled></select>
                 </div>
             </div>
-            <div class="setting">
-                <h3>Movement Speed</h3>
-                <div class="setting-item-container">
-                    <input type="range" min="5" max="20" value="5" class="slider" id="movementSpeedSlider">
-                </div>
-                <p>Value: <span id="movementSpeedValue"></span></p>
-                <script>
-                    var slider = document.getElementById("movementSpeedSlider");
-                    var output = document.getElementById("movementSpeedValue");
-                    output.innerHTML = slider.value;
-                    
-                    slider.oninput = function() {
-                      output.innerHTML = this.value;
-                    }
-                    </script>
-            </div>
         </div>
-
-        <div id="canvas-container">
-            <canvas id="canvas"></canvas>
-        </div>
-
-        <div id="noise-canvas-container">
-            <canvas id="noise-canvas-height"></canvas>
-            <canvas id="noise-canvas-2"></canvas>
-            <canvas id="noise-canvas-3"></canvas>
-        </div>
-        <script type="module" src="procgen.js"></script>
-        <script type="module">
-            import { ProcGen } from './procgen.js';
-
-            const procGen = new ProcGen();
-            procGen.createNoise("noise-canvas-height");
-            procGen.createNoise("noise-canvas-2");
-            procGen.createNoise("noise-canvas-3");
-        </script>
         
     </div>
     <noscript>You need to enable JavaScript to view the full site.</noscript>

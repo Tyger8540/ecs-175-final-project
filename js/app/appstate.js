@@ -85,26 +85,26 @@ class AppState
      */
     update( )
     {
-        // Shading
-        if ( Input.isKeyPressed( 'c' ) ) {
-            this.updateUI( 'Shading', 'Phong' )
-        } else if ( Input.isKeyPressed( 'v' ) ) {
-            this.updateUI( 'Shading', 'Textured' )
-        }
+        // // Shading
+        // if ( Input.isKeyPressed( 'c' ) ) {
+        //     this.updateUI( 'Shading', 'Phong' )
+        // } else if ( Input.isKeyPressed( 'v' ) ) {
+        //     this.updateUI( 'Shading', 'Textured' )
+        // }
 
-        // Shading Debug
-        if ( Input.isKeyDown( 'n' ) ) {
-            this.updateUI( 'Shading Debug', 'Normals' )
-        } else {
-            this.updateUI( 'Shading Debug', '' )
-        }
+        // // Shading Debug
+        // if ( Input.isKeyDown( 'n' ) ) {
+        //     this.updateUI( 'Shading Debug', 'Normals' )
+        // } else {
+        //     this.updateUI( 'Shading Debug', '' )
+        // }
 
-        // Transformation
-        if ( Input.isKeyDown( 'q' ) ) {
-            this.updateUI( 'Control', 'Scene Node')
-        } else {
-            this.updateUI( 'Control', 'Camera')
-        }
+        // // Transformation
+        // if ( Input.isKeyDown( 'q' ) ) {
+        //     this.updateUI( 'Control', 'Scene Node')
+        // } else {
+        //     this.updateUI( 'Control', 'Camera')
+        // }
 
     }
 
