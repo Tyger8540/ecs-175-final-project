@@ -74,20 +74,19 @@ class VoxelChunk {
         }
 
         // add color to vertex buffer
-        // TODO: uncomment and test color
-        // for (let z = 0; z < CHUNK_SIZE; z++) {
-        //     for (let y = 0; y < CHUNK_SIZE; y++) {
-        //         for (let x = 0; x < CHUNK_SIZE; x++) {
-        //             // return if voxel at (x, y, z) is air
-        //             const voxel = this.getVoxel(x, y, z)
-        //             if (voxel.id == VOXEL_AIR) {
-        //                 return
-        //             }
+        for (let z = 0; z < CHUNK_SIZE; z++) {
+            for (let y = 0; y < CHUNK_SIZE; y++) {
+                for (let x = 0; x < CHUNK_SIZE; x++) {
+                    // return if voxel at (x, y, z) is air
+                    const voxel = this.getVoxel(x, y, z)
+                    if (voxel.id == VOXEL_AIR) {
+                        return
+                    }
 
-        //             this.indices.push(voxel.color.flat())
-        //         }
-        //     }
-        // }
+                    this.indices.push(voxel.color.flat())
+                }
+            }
+        }
 
         // Creates vertex buffer object for vertex data
         gl.bindBuffer( gl.ARRAY_BUFFER, this.vertices_buffer )
