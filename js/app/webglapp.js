@@ -92,13 +92,6 @@ class WebGlApp
         this.procGen = new ProcGen()
 
         this.generateTerrain()
-
-        // TEST CODE BELOW
-        // this.chunkManager.setVoxel(0, 0, 0, VoxelType.VOXEL_GRASS)
-        // this.chunkManager.setVoxel(1, 0, 0, VoxelType.VOXEL_GRASS)
-        // this.chunkManager.setVoxel(0, 1, 0, VoxelType.VOXEL_GRASS)
-        // this.chunkManager.setVoxel(0, 0, 1, VoxelType.VOXEL_GRASS)
-        // this.chunkManager.regenerateAllBuffers()
     }
 
     /**

@@ -15,15 +15,15 @@ class ChunkManager {
         }
     }
 
-    getChunkIndex(globalX, globalY) {
-        return Math.floor(globalY / CHUNK_SIZE) * this.size + Math.floor(globalX / CHUNK_SIZE)
+    getChunkIndex(globalX, globalZ) {
+        return Math.floor(globalZ / CHUNK_SIZE) * this.size + Math.floor(globalX / CHUNK_SIZE)
     }
 
     setVoxel(globalX, globalY, globalZ, voxelId) {
         const localX = globalX % CHUNK_SIZE
         const localY = globalY % CHUNK_SIZE
         const localZ = globalZ % CHUNK_SIZE
-        this.chunks[this.getChunkIndex(globalX, globalY)].setVoxel(localX, localY, localZ, voxelId)
+        this.chunks[this.getChunkIndex(globalX, globalZ)].setVoxel(localX, localY, localZ, voxelId)
     }
 
     regenerateAllBuffers() {
