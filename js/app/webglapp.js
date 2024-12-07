@@ -99,8 +99,8 @@ class WebGlApp
 
 
         var zero = vec3.create()
-        this.emitter = new Emitter(vec3.fromValues(0, 20, 0), vec3.fromValues(50, 0, 50), 20, 0.5, vec3.fromValues(0, -1, 0), 0.2, vec3.fromValues(0, -20, 0), 0.5, 4, 0.5, vec3.fromValues(0, 1, 0),
-            0.2, 500, 0.01, vec3.fromValues(1.0, 1.0, 1.0), vec3.fromValues(0.2, 5, 0.2), 8, this.shaders[6]
+        this.emitter = new Emitter(vec3.fromValues(0, 20, 0), vec3.fromValues(50, 0, 50), 60, 0.5, vec3.fromValues(0, -1, 0), 0.2, vec3.fromValues(0, -20, 0), 0.5, true, 0, 0, vec3.fromValues(0, 1, 0),
+            0, 5000, 0.003, vec3.fromValues(1.0, 1.0, 1.0), vec3.fromValues(0.05, 0.05, 1), 1, this.shaders[6]
             )
 
 

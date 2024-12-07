@@ -11,6 +11,7 @@ class Particle {
      * @param {vec3} velocity
      * @param {vec3} acceleration
      * 
+     * @param {bool} rotate_to_velocity
      * @param {float} rotation_speed
      * @param {vec3} rotation_axis
      * 
@@ -25,11 +26,12 @@ class Particle {
      * @param {Shader} shader
      * @param {WebGL2RenderingContext} gl
      */
-    constructor( position, velocity, acceleration, rotation_speed, rotation_axis, gravity, color, size, lifetime, shader, gl ) {
+    constructor( position, velocity, acceleration, rotate_to_velocity, rotation_speed, rotation_axis, gravity, color, size, lifetime, shader, gl ) {
         this.position = vec3.clone(position)
         this.velocity = vec3.clone(velocity)
         this.acceleration = vec3.clone(acceleration)
 
+        this.rotate_to_velocity = rotate_to_velocity
         this.rotation_speed = rotation_speed
         this.rotation_axis = vec3.clone(rotation_axis)
         this.rotation = 0.0
@@ -81,8 +83,16 @@ class Particle {
         //console.log(this.acceleration)
         vec3.add( this.velocity, this.velocity, vec3.scale(vec3.create(), this.gravity_vector, delta) )
 
-        this.rotation += this.rotation_speed * delta
-        mat4.fromRotation( this.rotation_matrix, this.rotation, this.rotation_axis )
+        if (!this.rotate_to_velocity) {
+            this.rotation += this.rotation_speed * delta
+            mat4.fromRotation( this.rotation_matrix, this.rotation, this.rotation_axis )
+        } else {
+            let angle_diff = vec3.angle(vec3.fromValues(0, 0, 1), this.velocity)
+            let rot_axis = vec3.cross(vec3.create(), vec3.fromValues(0, 0, 1), this.velocity)
+            this.rotation_matrix = mat4.fromRotation(mat4.create(), angle_diff, rot_axis)
+        }
+        
+        
 
         this.age += delta
 
