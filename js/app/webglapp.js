@@ -12,7 +12,6 @@ import { OBJLoader } from '../../assignment3.objloader.js'
 import { Scene, SceneNode } from './scene.js'
 import { ProcGen } from '../../procgen.js'
 import ChunkManager from '../../voxel/chunkmanager.js'
-import * as VoxelType from '../../voxel/voxeltypes.js'
 
 /**
  * @Class
@@ -103,8 +102,7 @@ class WebGlApp
      * Generates Terrain
      */
     generateTerrain() {
-        this.chunkManager = new ChunkManager(this.gl, this.shaders[4], this.numChunks)        
-        this.chunkManager.regenerateAllBuffers()
+        this.chunkManager = new ChunkManager(this.gl, this.shaders[4], this.numChunks)
         let width = 16 * this.numChunks
         let depth = 16 * this.numChunks
         let values = this.procGen.createNoiseMap(width, depth)
@@ -112,12 +110,12 @@ class WebGlApp
         for (let z = 0; z < depth; z++) {
             for (let x = 0; x < width; x++) {
                 if (values[x + z * width] < 0.2) {
-                    this.chunkManager.setVoxel(x, 0, z, VoxelType.VOXEL_AIR)
+                    this.chunkManager.setVoxel(x, 0, z, null)
                 } else {
                     for (let y = 0.2; y <= values[x + z * width]; y += 0.05) {
-                        this.chunkManager.setVoxel(x, Math.ceil((y - 0.2) * 18.75), z, VoxelType.VOXEL_GRASS)
+                        this.chunkManager.setVoxel(x, Math.ceil((y - 0.2) * 18.75), z, [0, 255, 0])
                     }
-                    this.chunkManager.setVoxel(x, 0, z, VoxelType.VOXEL_GRASS)
+                    this.chunkManager.setVoxel(x, 0, z, [0, 255, 0])
                 }
             }
         }
@@ -306,6 +304,23 @@ class WebGlApp
 
             // Rotate around view-aligned rotation axis
             let rotation = mat4.fromRotation(mat4.create(), deg2rad(-sensitivity * this.movementY * delta_time ), this.right)
+            this.eye = vec3.transformMat4(vec3.create(), this.eye, rotation)
+
+            // reset movementX and movementY
+            this.movementX = 0
+            this.movementY = 0
+
+            // Set dirty flag to trigger view matrix updates
+            view_dirty = true
+        }
+
+        // Control - FPS-style Camera Rotation
+        if (this.movementX != 0 || this.movementY != 0) {
+            // Rotate around xz plane around y
+            this.eye = vec3.rotateY(vec3.create(), this.eye, this.center, deg2rad(-10 * this.movementX * delta_time ))
+
+            // Rotate around view-aligned rotation axis
+            let rotation = mat4.fromRotation(mat4.create(), deg2rad(-10 * this.movementY * delta_time ), this.right)
             this.eye = vec3.transformMat4(vec3.create(), this.eye, rotation)
 
             // reset movementX and movementY
