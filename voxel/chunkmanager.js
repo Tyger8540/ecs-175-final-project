@@ -14,7 +14,7 @@ class ChunkManager {
             }
         }
 
-        this.lightDir = [-1, -1, -1]
+        this.shading = [0.5, 0.5, 0.5, 0.8, 0.8, 1.0]
     }
 
     getChunkIndex(globalX, globalZ) {
@@ -41,7 +41,7 @@ class ChunkManager {
                 const globalZ = chunkJ * CHUNK_SIZE
                 const chunkIndex = this.getChunkIndex(globalX, globalZ)
                 const chunk = this.chunks[chunkIndex]
-                chunk.render(gl, globalX, 1, globalZ, this.lightDir)
+                chunk.render(gl, globalX, 1, globalZ, this.shading)
             }
         }
     }

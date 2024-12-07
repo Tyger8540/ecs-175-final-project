@@ -32,7 +32,7 @@ class VoxelChunk {
     }
 
     regenerateBuffers(gl, shader) {
-        const NUM_VERTEX_ELEMENTS = 2
+        const VERTEX_ELEMENT_COUNT = 2 * 3 + 1
 
         // create vertex and index arrays
         this.vertices = []
@@ -58,20 +58,26 @@ class VoxelChunk {
                     ]
 
                     // push newIndices flattened, relative to indexOffset
-                    const indexOffset = this.vertices.length / (3 * NUM_VERTEX_ELEMENTS)
+                    const indexOffset = this.vertices.length / VERTEX_ELEMENT_COUNT
                     newIndices.forEach(arr => {
                         const toPush = [arr[0] + indexOffset, arr[1] + indexOffset, arr[2] + indexOffset]
                         this.indices.push(...toPush)
                     })
 
                     // push newVertices flattened, relative to (x, y, z)
-                    newVertices.forEach(arr => {
+                    for (let i in newVertices) {
+                        const arr = newVertices[i]
+
+                        // push position
                         const positionPush = [arr[0] + x, arr[1] + y, arr[2] + z]
                         this.vertices.push(...positionPush)
 
+                        // push faceId
+                        this.vertices.push(i) // TODO: this should not be i. not sure how to determine faceId by a vertex basis
+
                         // push color
                         this.vertices.push(...color)
-                    })
+                    }
                 }
             }
         }
@@ -93,20 +99,26 @@ class VoxelChunk {
         let a_position = shader.getAttributeLocation( 'a_position' )
         if (a_position >= 0) {
             gl.enableVertexAttribArray(a_position)
-            gl.vertexAttribPointer(a_position, 3, gl.FLOAT, false, 4 * 3 * NUM_VERTEX_ELEMENTS, 0)
+            gl.vertexAttribPointer(a_position, 3, gl.FLOAT, false, 4 * VERTEX_ELEMENT_COUNT, 0)
+        }
+
+        let a_faceId = shader.getAttributeLocation( 'a_faceId' )
+        if (a_faceId >= 0) {
+            gl.enableVertexAttribArray(a_faceId)
+            gl.vertexAttribPointer(a_faceId, 1, gl.FLOAT, false, 4 * VERTEX_ELEMENT_COUNT, 4 * 3)
         }
 
         let a_color = shader.getAttributeLocation( 'a_color' )
         if (a_color >= 0) {
             gl.enableVertexAttribArray(a_color)
-            gl.vertexAttribPointer(a_color, 3, gl.FLOAT, false, 4 * 3 * NUM_VERTEX_ELEMENTS, 4 * 3)
+            gl.vertexAttribPointer(a_color, 3, gl.FLOAT, false, 4 * VERTEX_ELEMENT_COUNT, 4 * 4)
         }
 
         gl.bindVertexArray( null )
         gl.bindBuffer( gl.ARRAY_BUFFER, null )
     }
 
-    render(gl, xPos, yPos, zPos, lightDir)
+    render(gl, xPos, yPos, zPos, shading)
     {
         // Bind vertex array object
         gl.bindVertexArray( this.vertex_array_object )
@@ -121,9 +133,7 @@ class VoxelChunk {
         // Set up shader
         this.shader.use( )
         this.shader.setUniform4x4f('u_m', model_matrix)
-        this.shader.setUniform3f('u_light_directional.direction', lightDir)
-        this.shader.setUniform3f('u_light_directional.color', [1, 1, 1])
-        this.shader.setUniform1f('u_light_directional.intensity', 1)
+        this.gl.uniform1fv(this.shader.getUniformLocation('u_shading'), shading)
 
         // Draw the element
         gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_INT, 0 )
