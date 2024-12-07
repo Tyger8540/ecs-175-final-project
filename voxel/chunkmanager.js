@@ -7,7 +7,12 @@ class ChunkManager {
      */
     constructor(gl, shader, size) {
         this.size = size
-        this.chunks = Array(size * size).fill(new VoxelChunk(gl, shader))
+        this.chunks = Array(size * size)
+        for (let chunkJ = 0; chunkJ < this.size; chunkJ++) {
+            for (let chunkI = 0; chunkI < this.size; chunkI++) {
+                this.chunks[chunkJ * size + chunkI] = new VoxelChunk(gl, shader)
+            }
+        }
     }
 
     getChunkIndex(globalX, globalY) {
@@ -31,10 +36,10 @@ class ChunkManager {
         for (let chunkJ = 0; chunkJ < this.size; chunkJ++) {
             for (let chunkI = 0; chunkI < this.size; chunkI++) {
                 const globalX = chunkI * CHUNK_SIZE
-                const globalY = chunkJ * CHUNK_SIZE
-                const chunkIndex = this.getChunkIndex(globalX, globalY)
+                const globalZ = chunkJ * CHUNK_SIZE
+                const chunkIndex = this.getChunkIndex(globalX, globalZ)
                 const chunk = this.chunks[chunkIndex]
-                chunk.render(gl, globalX, globalY)
+                chunk.render(gl, globalX, globalZ)
             }
         }
     }
