@@ -63,7 +63,7 @@ class Particle {
         this.texture = texture
         this.shader = shader
 
-        console.log(gl)
+        //console.log(gl)
 
         this.createVBO( gl )
         this.createIBO( gl )
