@@ -17,7 +17,7 @@ class Particle {
      * @param {float} gravity
      *  
      * @param {vec3} color
-     * @param {float} size
+     * @param {vec3} size
      * @param {float} lifetime
      * 
      * 
@@ -25,7 +25,7 @@ class Particle {
      * @param {Shader} shader
      * @param {WebGL2RenderingContext} gl
      */
-    constructor( position, velocity, acceleration, rotation_speed, rotation_axis, gravity, color, size, lifetime, texture, shader, gl ) {
+    constructor( position, velocity, acceleration, rotation_speed, rotation_axis, gravity, color, size, lifetime, shader, gl ) {
         this.position = vec3.clone(position)
         this.velocity = vec3.clone(velocity)
         this.acceleration = vec3.clone(acceleration)
@@ -40,7 +40,7 @@ class Particle {
 
         this.color = color
 
-        this.size = size
+        this.size = vec3.clone(size)
 
         this.vertices = this.calculateVertices( size )
         this.vertices_buffer = null
@@ -60,7 +60,6 @@ class Particle {
         this.lifetime = lifetime
         this.age = 0.0
 
-        this.texture = texture
         this.shader = shader
 
         //console.log(gl)
@@ -136,7 +135,7 @@ class Particle {
         let result = []
 
         for (let i = 0; i < verts.length; i++) {
-            result.push(...vec3.scale(vec3.create(), verts[i], s))
+            result.push(...vec3.multiply(vec3.create(), verts[i], s))
         }
 
         return result
