@@ -90,8 +90,8 @@ class WebGlApp
 
         this.procGen = new ProcGen()
 
-        let zero = vec3.fromValues(0, 0, 0)
-        this.emitter = new Emitter(zero, zero, zero, zero, 1, 0.5, 0, 0.5, 0, 0, this.shaders[6], gl)
+        let zero = vec3.create()
+        this.emitter = new Emitter(zero, vec3.fromValues(0, 2, 0), zero, 1, 1, 0.5, 0, 0.5, 0, 0, this.shaders[6], gl)
 
         let width = 16
         let height = 16
@@ -509,6 +509,8 @@ class WebGlApp
 
         // render chunk manager
         this.chunkManager.render(gl)
+
+        this.emitter.render( gl )
 
         // Render the scene
         if (this.scene) this.scene.render( gl )

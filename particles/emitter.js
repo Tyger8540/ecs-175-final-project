@@ -10,7 +10,7 @@ class Emitter {
      * @param {vec3} position 
      * @param {vec3} initial_velocity 
      * @param {vec3} linear_acceleration 
-     * @param {vec3} gravity 
+     * @param {float} gravity 
      * @param {int} max_particles 
      * @param {float} period 
      * @param {*} color 
@@ -39,7 +39,7 @@ class Emitter {
     }
 
     update ( delta ) {
-        console.log("asdfasdfasdf")
+        //console.log("asdfasdfasdf")
         if ( this.list_particles.length < this.max_particles ){
             this.timer += delta
             if ( this.timer >= this.period ) {
@@ -50,7 +50,8 @@ class Emitter {
         }
 
         for ( let i = 0; i < this.list_particles.length; i++ ) {
-            this.list_particles[i].update(delta)
+            this.list_particles[i].update( delta, this.gl )
+            console.log(this.list_particles[i].acceleration)
         }
     }
 

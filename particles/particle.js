@@ -8,12 +8,12 @@ class Particle {
     /**
      * An instance of a particle as a quad.
      * @param {vec3} position
-     * @param {vec3} normal
      * @param {vec3} velocity
      * @param {vec3} acceleration
      * @param {float} gravity
      *  
      * @param {vec3} color
+     * @param {float} size
      * @param {float} lifetime
      * 
      * @param {Texture} texture
@@ -25,6 +25,7 @@ class Particle {
         this.velocity = velocity
         this.acceleration = acceleration
         this.gravity = gravity
+        this.gravity_vector = vec3.scale( vec3.create(), vec3.fromValues(0, -1, 0), this.gravity )
 
         this.color = color
 
@@ -47,7 +48,7 @@ class Particle {
         this.texture = texture
         this.shader = shader
 
-        console.log(gl)
+        //console.log(gl)
 
         this.createVBO( gl )
         this.createIBO( gl )
@@ -60,11 +61,11 @@ class Particle {
      * @param {float} delta 
      */
     update( delta, gl ) {
-        let gravity_vector = vec3.scale( vec3.create(), vec3.fromValues(0, 1, 0), this.gravity )
 
         vec3.add( this.position, this.position, vec3.scale(vec3.create(), this.velocity, delta) )
-        vec3.add( this.velocity, this.velocity, vec3.scale(vec3.create(), this.acceleration, delta) )
-        vec3.add( this.velocity, this.velocity, vec3.scale(vec3.create(), gravity_vector, delta) )
+        //vec3.add( this.velocity, this.velocity, vec3.scale(vec3.create(), this.acceleration, delta) )
+        //console.log(this.acceleration)
+        //vec3.add( this.velocity, this.velocity, vec3.scale(vec3.create(), this.gravity_vector, delta) )
 
         this.age += delta
 
@@ -81,12 +82,14 @@ class Particle {
         this.shader.use()
 
         gl.bindVertexArray( this.vertex_array_object )
+        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.index_buffer)
 
         this.shader.setUniform3f( "u_normal", vec3.fromValues(1, 0, 0) )
         this.shader.setUniform3f( "u_displacement", this.position )
 
-        gl.drawElements( gl.TRIANGLES, 4, gl.UNSIGNED_INT, 0 )
+        gl.drawElements( gl.TRIANGLES, 6, gl.UNSIGNED_INT, 0 )
 
+        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, null)
         gl.bindVertexArray( null )
 
         this.shader.unuse()
@@ -127,7 +130,7 @@ class Particle {
     createIBO( gl ) {
         this.index_buffer = gl.createBuffer()
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.index_buffer)
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(this.indices), gl.STATIC_DRAW)
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.indices), gl.STATIC_DRAW)
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null)
     }
 
