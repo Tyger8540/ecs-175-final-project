@@ -1,11 +1,9 @@
-import * as VoxelType from './voxeltypes.js'
 import { Object3D } from '../assignment3.object3d.js'
-import { VOXEL_AIR } from './voxeltypes.js'
 import * as mat4 from '../js/lib/glmatrix/mat4.js'
 
 const CHUNK_SIZE = 16
 
-// chunk is a 3d array of voxelIds. voxel ids are defined in voxeltypes.js
+// chunk is a 3d array of voxel colors. null means voxel is air
 class VoxelChunk {
     constructor(gl, shader) {
         // webgl
@@ -16,7 +14,7 @@ class VoxelChunk {
         this.vertex_array_object = gl.createVertexArray();
 
         // voxel
-        this.voxels = Array(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE).fill(VoxelType.VOXEL_AIR)
+        this.voxels = Array(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE).fill(null)
 
         this.regenerateBuffers(this.gl, this.shader)
     }
@@ -29,8 +27,8 @@ class VoxelChunk {
         return this.voxels[this.getIndex(localX, localY, localZ)]
     }
 
-    setVoxel(localX, localY, localZ, voxelId) {
-        this.voxels[this.getIndex(localX, localY, localZ)] = voxelId
+    setVoxel(localX, localY, localZ, color) {
+        this.voxels[this.getIndex(localX, localY, localZ)] = color
     }
 
     regenerateBuffers(gl, shader) {
@@ -41,8 +39,8 @@ class VoxelChunk {
             for (let y = 0; y < CHUNK_SIZE; y++) {
                 for (let x = 0; x < CHUNK_SIZE; x++) {
                     // return if voxel at (x, y, z) is air
-                    const voxel = this.getVoxel(x, y, z)
-                    if (voxel.id === VOXEL_AIR.id) {
+                    const color = this.getVoxel(x, y, z)
+                    if (color === null) {
                         continue
                     }
 
@@ -70,7 +68,7 @@ class VoxelChunk {
                         this.vertices.push(...positionPush)
 
                         // push color
-                        this.vertices.push(...voxel.color)
+                        this.vertices.push(...color)
                     })
                 }
             }

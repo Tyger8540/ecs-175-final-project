@@ -12,7 +12,6 @@ import { OBJLoader } from '../../assignment3.objloader.js'
 import { Scene, SceneNode } from './scene.js'
 import { ProcGen } from '../../procgen.js'
 import ChunkManager from '../../voxel/chunkmanager.js'
-import * as VoxelType from '../../voxel/voxeltypes.js'
 
 /**
  * @Class
@@ -111,12 +110,12 @@ class WebGlApp
         for (let z = 0; z < depth; z++) {
             for (let x = 0; x < width; x++) {
                 if (values[x + z * width] < 0.2) {
-                    this.chunkManager.setVoxel(x, 0, z, VoxelType.VOXEL_AIR)
+                    this.chunkManager.setVoxel(x, 0, z, null)
                 } else {
                     for (let y = 0.2; y <= values[x + z * width]; y += 0.05) {
-                        this.chunkManager.setVoxel(x, Math.ceil((y - 0.2) * 18.75), z, VoxelType.VOXEL_GRASS)
+                        this.chunkManager.setVoxel(x, Math.ceil((y - 0.2) * 18.75), z, [0, 255, 0])
                     }
-                    this.chunkManager.setVoxel(x, 0, z, VoxelType.VOXEL_GRASS)
+                    this.chunkManager.setVoxel(x, 0, z, [0, 255, 0])
                 }
             }
         }

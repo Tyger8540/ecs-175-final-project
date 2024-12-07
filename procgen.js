@@ -1,7 +1,6 @@
 // import { createNoise2D } from 'simplex-noise';
 import {createNoise2D} from "https://unpkg.com/simplex-noise@4.0.1/dist/esm/simplex-noise.js";
 import ChunkManager from '/voxel/chunkmanager.js'
-import * as VoxelType from '/voxel/voxeltypes.js'
 
 class ProcGen
 {
