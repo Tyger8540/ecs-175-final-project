@@ -1,11 +1,9 @@
-import * as VoxelType from './voxeltypes.js'
 import { Object3D } from '../assignment3.object3d.js'
-import { VOXEL_AIR } from './voxeltypes.js'
 import * as mat4 from '../js/lib/glmatrix/mat4.js'
 
 const CHUNK_SIZE = 16
 
-// chunk is a 3d array of voxelIds. voxel ids are defined in voxeltypes.js
+// chunk is a 3d array of voxel colors. null means voxel is air
 class VoxelChunk {
     constructor(gl, shader) {
         // webgl
@@ -16,7 +14,7 @@ class VoxelChunk {
         this.vertex_array_object = gl.createVertexArray();
 
         // voxel
-        this.voxels = Array(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE).fill(VoxelType.VOXEL_AIR)
+        this.voxels = Array(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE).fill(null)
 
         this.regenerateBuffers(this.gl, this.shader)
     }
@@ -29,8 +27,8 @@ class VoxelChunk {
         return this.voxels[this.getIndex(localX, localY, localZ)]
     }
 
-    setVoxel(localX, localY, localZ, voxelId) {
-        this.voxels[this.getIndex(localX, localY, localZ)] = voxelId
+    setVoxel(localX, localY, localZ, color) {
+        this.voxels[this.getIndex(localX, localY, localZ)] = color
     }
 
     regenerateBuffers(gl, shader) {
@@ -41,8 +39,8 @@ class VoxelChunk {
             for (let y = 0; y < CHUNK_SIZE; y++) {
                 for (let x = 0; x < CHUNK_SIZE; x++) {
                     // return if voxel at (x, y, z) is air
-                    const voxel = this.getVoxel(x, y, z)
-                    if (voxel.id == VOXEL_AIR.id) {
+                    const color = this.getVoxel(x, y, z)
+                    if (color === null) {
                         continue
                     }
 
@@ -58,7 +56,7 @@ class VoxelChunk {
                     ]
 
                     // push newIndices flattened, relative to indexOffset
-                    const indexOffset = this.vertices.length / 3
+                    const indexOffset = this.vertices.length / 6
                     newIndices.forEach(arr => {
                         const toPush = [arr[0] + indexOffset, arr[1] + indexOffset, arr[2] + indexOffset]
                         this.indices.push(...toPush)
@@ -66,28 +64,15 @@ class VoxelChunk {
 
                     // push newVertices flattened, relative to (x, y, z)
                     newVertices.forEach(arr => {
-                        const toPush = [arr[0] + x, arr[1] + y, arr[2] + z]
-                        this.vertices.push(...toPush)
+                        const positionPush = [arr[0] + x, arr[1] + y, arr[2] + z]
+                        this.vertices.push(...positionPush)
+
+                        // push color
+                        this.vertices.push(...color)
                     })
                 }
             }
         }
-
-        // add color to vertex buffer
-        // TODO: uncomment and test color
-        // for (let z = 0; z < CHUNK_SIZE; z++) {
-        //     for (let y = 0; y < CHUNK_SIZE; y++) {
-        //         for (let x = 0; x < CHUNK_SIZE; x++) {
-        //             // return if voxel at (x, y, z) is air
-        //             const voxel = this.getVoxel(x, y, z)
-        //             if (voxel.id == VOXEL_AIR) {
-        //                 return
-        //             }
-
-        //             this.indices.push(voxel.color.flat())
-        //         }
-        //     }
-        // }
 
         // Creates vertex buffer object for vertex data
         gl.bindBuffer( gl.ARRAY_BUFFER, this.vertices_buffer )
@@ -106,14 +91,13 @@ class VoxelChunk {
         let a_position = shader.getAttributeLocation( 'a_position' )
         if (a_position >= 0) {
             gl.enableVertexAttribArray(a_position)
-            gl.vertexAttribPointer(a_position, 3, gl.FLOAT, false, 0, 0)
+            gl.vertexAttribPointer(a_position, 3, gl.FLOAT, false, 4 * 6, 0)
         }
 
         let a_color = shader.getAttributeLocation( 'a_color' )
-        // console.log(a_color) TODO: figure out why a_color = -1
         if (a_color >= 0) {
             gl.enableVertexAttribArray(a_color)
-            gl.vertexAttribPointer(a_color, 3, gl.FLOAT, false, 0, this.vertices.length / 2)
+            gl.vertexAttribPointer(a_color, 3, gl.FLOAT, false, 4 * 6, 4 * 3)
         }
 
         gl.bindVertexArray( null )

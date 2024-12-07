@@ -45,8 +45,13 @@ class App
 
         // webgl app implementation
         this.impl = new WebGlApp( this.gl, this.shaders, this.app_state )
+
         window.generateTerrain = () => {
             this.impl.generateTerrain();
+        };
+
+        window.setMovement = (movementX, movementY) => {
+            this.impl.setMovement(movementX, movementY);
         };
     }
 

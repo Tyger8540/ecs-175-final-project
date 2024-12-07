@@ -11,7 +11,4 @@ out vec4 o_fragColor;
 
 void main() {
     o_fragColor = vec4(o_color, 1);
-
-    // TEMP
-    o_fragColor = vec4(1, 0, 1, 1);
 }
