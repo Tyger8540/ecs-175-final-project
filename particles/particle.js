@@ -1,6 +1,7 @@
 import * as vec3 from "../js/lib/glmatrix/vec3.js"
 import * as Texture from "../assignment3.texture.js"
 import * as mat4 from "../js/lib/glmatrix/mat4.js"
+import { Shader } from "../js/utils/shader.js"
 
 
 class Particle {
@@ -16,6 +17,7 @@ class Particle {
      * @param {float} lifetime
      * 
      * @param {Texture} texture
+     * @param {Shader} shader
      */
     constructor( position, velocity, acceleration, gravity, color, size, lifetime, texture, shader, gl ) {
         this.position = position
@@ -47,6 +49,7 @@ class Particle {
         this.age = 0.0
 
         this.texture = texture
+        this.shader = shader
     }
 
 
@@ -59,9 +62,7 @@ class Particle {
 
         vec3.add( this.position, this.position, vec3.scale(vec3.create(), this.velocity, delta) )
         vec3.add( this.velocity, this.velocity, vec3.scale(vec3.create(), this.acceleration, delta) )
-        vec3.add( this.velocity, this.velocity, vec3.scale(vec3.create(), this.gravity_vector, delta) )
-
-        this.calculateVertices()
+        vec3.add( this.velocity, this.velocity, vec3.scale(vec3.create(), gravity_vector, delta) )
 
         this.age += delta
 
@@ -79,18 +80,6 @@ class Particle {
         gl.bufferData()
     }
 
-
-    calculateVertices( ) {
-        let x = this.position[0]
-        let y = this.position[1]
-        let z = this.position[2]
-
-        for (let i = 0; i < 4; i++) {
-            this.vertices[i] = this.quad[i] + x
-            this.vertices[i + 1] = this.quad[i + 1] + y
-            this.vertices[i + 2] = this.quad[i + 2] + z
-        }
-    }
 
     /**
      * 
@@ -122,11 +111,13 @@ class Particle {
      */
     createVAO( gl ) {
         this.vertex_array_object = gl.createVertexArray()
+
+        let location = null;
     
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertices_buffer)
         gl.bindVertexArray(this.vertex_array_object)
+        location = this.shader
 
-        
         gl.bindVertexArray(null)
         gl,bindBuffer(gl.ARRAY_BUFFER, null)
     }
