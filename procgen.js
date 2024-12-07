@@ -106,8 +106,8 @@ class ProcGen
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {      
                 let nx = x/width - 0.5, ny = y/height - 0.5;
-                let e = 1 * noise(1 * frequency * nx, 1 * ny) + 0.5 * noise(2 * frequency * nx, 2 * ny) + 0.25 * noise(4 * frequency * nx, 4 * ny);
-                e = e / (1 + 0.5 + 0.25);
+                let e = 1 * frequency * noise(1 * nx, 1 * ny) + 0.5 * frequency * noise(2 * nx, 2 * ny) + 0.25 * frequency * noise(4 * nx, 4 * ny);
+                e = e / (frequency * (1 + 0.5 + 0.25));
                 values.push(Math.pow(e, 2));
                 // let value = Math.round(e * 32) / 32;
 
