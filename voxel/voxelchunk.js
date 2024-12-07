@@ -32,6 +32,8 @@ class VoxelChunk {
     }
 
     regenerateBuffers(gl, shader) {
+        const NUM_VERTEX_ELEMENTS = 2
+
         // create vertex and index arrays
         this.vertices = []
         this.indices = []
@@ -56,7 +58,7 @@ class VoxelChunk {
                     ]
 
                     // push newIndices flattened, relative to indexOffset
-                    const indexOffset = this.vertices.length / 6
+                    const indexOffset = this.vertices.length / (3 * NUM_VERTEX_ELEMENTS)
                     newIndices.forEach(arr => {
                         const toPush = [arr[0] + indexOffset, arr[1] + indexOffset, arr[2] + indexOffset]
                         this.indices.push(...toPush)
@@ -91,20 +93,20 @@ class VoxelChunk {
         let a_position = shader.getAttributeLocation( 'a_position' )
         if (a_position >= 0) {
             gl.enableVertexAttribArray(a_position)
-            gl.vertexAttribPointer(a_position, 3, gl.FLOAT, false, 4 * 6, 0)
+            gl.vertexAttribPointer(a_position, 3, gl.FLOAT, false, 4 * 3 * NUM_VERTEX_ELEMENTS, 0)
         }
 
         let a_color = shader.getAttributeLocation( 'a_color' )
         if (a_color >= 0) {
             gl.enableVertexAttribArray(a_color)
-            gl.vertexAttribPointer(a_color, 3, gl.FLOAT, false, 4 * 6, 4 * 3)
+            gl.vertexAttribPointer(a_color, 3, gl.FLOAT, false, 4 * 3 * NUM_VERTEX_ELEMENTS, 4 * 3)
         }
 
         gl.bindVertexArray( null )
         gl.bindBuffer( gl.ARRAY_BUFFER, null )
     }
 
-    render(gl, xPos, zPos)
+    render(gl, xPos, yPos, zPos, lightDir)
     {
         // Bind vertex array object
         gl.bindVertexArray( this.vertex_array_object )
@@ -119,6 +121,9 @@ class VoxelChunk {
         // Set up shader
         this.shader.use( )
         this.shader.setUniform4x4f('u_m', model_matrix)
+        this.shader.setUniform3f('u_light_directional.direction', lightDir)
+        this.shader.setUniform3f('u_light_directional.color', [1, 1, 1])
+        this.shader.setUniform1f('u_light_directional.intensity', 1)
 
         // Draw the element
         gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_INT, 0 )

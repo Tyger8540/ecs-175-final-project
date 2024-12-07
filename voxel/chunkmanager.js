@@ -13,6 +13,8 @@ class ChunkManager {
                 this.chunks[chunkJ * size + chunkI] = new VoxelChunk(gl, shader)
             }
         }
+
+        this.lightDir = [-1, -1, -1]
     }
 
     getChunkIndex(globalX, globalZ) {
@@ -39,7 +41,7 @@ class ChunkManager {
                 const globalZ = chunkJ * CHUNK_SIZE
                 const chunkIndex = this.getChunkIndex(globalX, globalZ)
                 const chunk = this.chunks[chunkIndex]
-                chunk.render(gl, globalX, globalZ)
+                chunk.render(gl, globalX, 1, globalZ, this.lightDir)
             }
         }
     }
