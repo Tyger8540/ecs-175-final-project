@@ -34,7 +34,7 @@ class Particle {
         this.rotation_axis = vec3.clone(rotation_axis)
         this.rotation = 0.0
         this.rotation_matrix = mat4.create()
-        
+
         this.gravity = gravity
         this.gravity_vector = vec3.scale( vec3.create(), vec3.fromValues(0, -1, 0), this.gravity )
 
@@ -46,8 +46,12 @@ class Particle {
         this.vertices_buffer = null
 
         this.indices = [
-            0, 1, 2,
-            2, 3, 0
+            0, 1, 2, 0, 2, 3, // bottom
+            0, 1, 5, 0, 5, 4, // front
+            1, 2, 6, 1, 6, 5, // right
+            3, 2, 6, 3, 6, 7, // back
+            0, 3, 7, 0, 7, 4, // left
+            4, 5, 6, 4, 6, 7, // top
         ]
         this.index_buffer = null
 
@@ -59,7 +63,7 @@ class Particle {
         this.texture = texture
         this.shader = shader
 
-        //console.log(gl)
+        console.log(gl)
 
         this.createVBO( gl )
         this.createIBO( gl )
@@ -102,7 +106,7 @@ class Particle {
         this.shader.setUniform3f( "u_displacement", this.position )
         this.shader.setUniform4x4f( "u_r", this.rotation_matrix )
 
-        gl.drawElements( gl.TRIANGLES, 6, gl.UNSIGNED_INT, 0 )
+        gl.drawElements( gl.TRIANGLES, this.indices.length, gl.UNSIGNED_INT, 0 )
 
         gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, null)
         gl.bindVertexArray( null )
@@ -119,10 +123,14 @@ class Particle {
     calculateVertices( s ) {
         
         let verts = [
-            vec3.fromValues(0, 0.5, 0.5),
-            vec3.fromValues(0, -0.5, 0.5),
-            vec3.fromValues(0, -0.5, -0.5),
-            vec3.fromValues(0, 0.5, -0.5)
+            vec3.fromValues(0.5, 0.5, 0.5),
+            vec3.fromValues(0.5, -0.5, 0.5),
+            vec3.fromValues(0.5, -0.5, -0.5),
+            vec3.fromValues(0.5, 0.5, -0.5),
+            vec3.fromValues(-0.5, 0.5, 0.5),
+            vec3.fromValues(-0.5, -0.5, 0.5),
+            vec3.fromValues(-0.5, -0.5, -0.5),
+            vec3.fromValues(-0.5, 0.5, -0.5)
         ]
 
         let result = []
@@ -179,6 +187,15 @@ class Particle {
         
         gl.bindVertexArray(null)
         gl.bindBuffer(gl.ARRAY_BUFFER, null)
+    }
+
+    
+    isDead( ) {
+        if ( this.age > this.lifetime ) {
+            return true
+        } else {
+            return false
+        }
     }
 }
 

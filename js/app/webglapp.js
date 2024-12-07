@@ -99,7 +99,7 @@ class WebGlApp
 
 
         var zero = vec3.create()
-        this.emitter = new Emitter(zero, vec3.fromValues(0.2, 2, 0), zero, 6, vec3.fromValues(1, 0, 0), 0.5, 3, 0.5, 0, 50, 0, 0, this.shaders[6], gl)
+        this.emitter = new Emitter(zero, 10, vec3.fromValues(0.2, 2, 0), zero, 60, vec3.fromValues(1, 0, 0), 0.2, 50, 0.1, 0, 0.1, 2, 0, this.shaders[6], gl)
 
 
 
@@ -244,7 +244,7 @@ class WebGlApp
                 break
         }
 
-        this.emitter.update(delta_time)
+        this.emitter.update(delta_time, gl)
     }
 
     /**
