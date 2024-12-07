@@ -3,6 +3,8 @@
 
 in vec3 a_position;
 
+uniform vec3 u_displacement;
+uniform vec3 u_normal;
 uniform mat4x4 u_v;
 uniform mat4x4 u_p;
 

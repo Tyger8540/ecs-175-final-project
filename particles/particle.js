@@ -28,13 +28,8 @@ class Particle {
         this.color = color
 
         this.size = size
-        this.quad = [
-            0, size, size,
-            0, -size, size,
-            0, -size, -size,
-            0, size, -size
-        ]
-        this.vertices = this.calculateVertices()
+
+        this.vertices = this.calculateVertices(s)
         this.vertices_buffer = null
 
         this.indices = [
@@ -50,6 +45,10 @@ class Particle {
 
         this.texture = texture
         this.shader = shader
+
+        this.createVBO( gl )
+        this.createIBO( gl )
+        this.createVAO( gl )
     }
 
 
@@ -74,10 +73,35 @@ class Particle {
      * @param {WebGL2RenderingContext} gl 
      */
     render( gl ) {
-        this.vertices_buffer = gl.createBuffer()
-        this.index_buffer = gl.createBuffer()
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertices_buffer)
-        gl.bufferData()
+
+        
+        this.shader.use()
+
+        gl.bindVertexArray( this.vertex_array_object )
+
+        this.shader.setUniform3f( "u_normal", vec3.fromValues(1, 0, 0) )
+        this.shader.setUniform3f( "u_displacement", this.position )
+
+        gl.drawElements( gl.TRIANGLES, 4, gl.UNSIGNED_INT, 0 )
+
+        gl.bindVertexArray( null )
+        
+        this.shader.unuse()
+    }
+
+
+    /**
+     * 
+     * @param {float} s 
+     * @returns {Array}
+     */
+    calculateVertices( s ) {
+        return [
+            0, s, s,
+            0, -s, s,
+            0, -s, -s,
+            0, s, -s
+        ]
     }
 
 
@@ -88,7 +112,7 @@ class Particle {
     createVBO( gl ) {
         this.vertices_buffer = gl.createBuffer()
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertices_buffer)
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STREAM_DRAW)
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW)
         gl.bindBuffer(gl.ARRAY_BUFFER, null)
     }
 
@@ -116,8 +140,13 @@ class Particle {
     
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertices_buffer)
         gl.bindVertexArray(this.vertex_array_object)
-        location = this.shader
 
+        location = this.shader.getAttributeLocation( "a_position" )
+        if (location >= 0) {
+            gl.enableVertexAttribArray( location )
+            gl.vertexAttribPointer( location, 3, gl.FLOAT, false, 0, 0)
+        }
+        
         gl.bindVertexArray(null)
         gl,bindBuffer(gl.ARRAY_BUFFER, null)
     }
