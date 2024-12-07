@@ -85,7 +85,7 @@ class WebGlApp
         
         this.gl = gl
 
-        this.numChunks = 10
+        this.numChunks = 20
 
         this.chunkManager = new ChunkManager(this.gl, this.shaders[4], this.numChunks)        
         this.chunkManager.regenerateAllBuffers()
@@ -107,15 +107,56 @@ class WebGlApp
         let depth = 16 * this.numChunks
         let values = this.procGen.createNoiseMap(width, depth)
 
+        let value
         for (let z = 0; z < depth; z++) {
             for (let x = 0; x < width; x++) {
-                if (values[x + z * width] < 0.2) {
-                    this.chunkManager.setVoxel(x, 0, z, null)
-                } else {
-                    for (let y = 0.2; y <= values[x + z * width]; y += 0.05) {
-                        this.chunkManager.setVoxel(x, Math.ceil((y - 0.2) * 18.75), z, [0, 255, 0])
-                    }
-                    this.chunkManager.setVoxel(x, 0, z, [0, 255, 0])
+                this.chunkManager.setVoxel(x, 0, z, [0, 0, 255])  // set the water voxel at y=0
+                value = values[x + z * width]
+                // if (value < 0.2) {
+                //     this.chunkManager.setVoxel(x, 1, z, null)  // set the voxel to air
+                // } else {
+                //     for (let y = 0.2; y <= values[x + z * width]; y += 0.05) {
+                //         this.chunkManager.setVoxel(x, Math.round(Math.ceil((y - 0.2) * 18.75) + 1), z, [0, 255, 0])
+                //     }
+                //     // this.chunkManager.setVoxel(x, 0, z, [0, 255, 0])
+                // }
+
+                let r, g, b;
+                // Convert noise value to water if below threshold
+                if (value < 0.2) {
+                    // water
+                    r = 0;
+                    g = 0;
+                    b = 255;
+                }
+                else if (value < 0.3) {
+                    // sand
+                    r = 255;
+                    g = 255;
+                    b = 0;
+                }
+                else if (value < 0.5) {
+                    // grass
+                    r = 0;
+                    g = 255;
+                    b = 0;
+                }
+                else if (value < 0.7) {
+                    // stone
+                    console.log("stone")
+                    r = 122;
+                    g = 122;
+                    b = 122;
+                }
+                else {
+                    // snow
+                    console.log("snow")
+                    r = 255;
+                    g = 255;
+                    b = 255;
+                }
+                for (let y = 0.2; y <= values[x + z * width]; y += 0.05) {
+                    this.chunkManager.setVoxel(x, Math.ceil((y - 0.2) * 18.75) + 1, z, [r, g, b])
                 }
             }
         }
@@ -532,7 +573,7 @@ class WebGlApp
         // Render the box
         // This will use the MVP that was passed to the shader
         // this.box.render( gl )
-        this.plane.render( gl )
+        // this.plane.render( gl )
 
         // render chunk manager
         this.chunkManager.render(gl)
