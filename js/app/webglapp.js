@@ -94,6 +94,9 @@ class WebGlApp
         this.procGen = new ProcGen()
 
         this.generateTerrain()
+
+        this.movementX = 0
+        this.movementY = 0
     }
 
     /**
@@ -119,6 +122,11 @@ class WebGlApp
             }
         }
         this.chunkManager.regenerateAllBuffers()
+    }
+
+    setMovement(moveX, moveY) {
+        this.movementX = moveX
+        this.movementY = moveY
     }
 
     /**
@@ -257,17 +265,17 @@ class WebGlApp
         // }
 
         // Control - Rotate
-        if (Input.isMouseDown(0) && !Input.isKeyDown(' ')) {
-            // Rotate around xz plane around y
-            this.eye = vec3.rotateY(vec3.create(), this.eye, this.center, deg2rad(-10 * Input.getMouseDx() * delta_time ))
+        // if (Input.isMouseDown(0) && !Input.isKeyDown(' ')) {
+        //     // Rotate around xz plane around y
+        //     this.eye = vec3.rotateY(vec3.create(), this.eye, this.center, deg2rad(-10 * Input.getMouseDx() * delta_time ))
             
-            // Rotate around view-aligned rotation axis
-            let rotation = mat4.fromRotation(mat4.create(), deg2rad(-10 * Input.getMouseDy() * delta_time ), this.right)
-            this.eye = vec3.transformMat4(vec3.create(), this.eye, rotation)
+        //     // Rotate around view-aligned rotation axis
+        //     let rotation = mat4.fromRotation(mat4.create(), deg2rad(-10 * Input.getMouseDy() * delta_time ), this.right)
+        //     this.eye = vec3.transformMat4(vec3.create(), this.eye, rotation)
 
-            // Set dirty flag to trigger view matrix updates
-            view_dirty = true
-        }
+        //     // Set dirty flag to trigger view matrix updates
+        //     view_dirty = true
+        // }
 
         // Control - Pan
         // if (Input.isMouseDown(1) || (Input.isMouseDown(0) && Input.isKeyDown(' '))) {
@@ -286,6 +294,23 @@ class WebGlApp
 
         var slider = document.getElementById("movementSpeedSlider")
         let move_speed = slider.value
+
+        // Control - FPS-style Camera Rotation
+        if (this.movementX != 0 || this.movementY != 0) {
+            // Rotate around xz plane around y
+            this.eye = vec3.rotateY(vec3.create(), this.eye, this.center, deg2rad(-10 * this.movementX * delta_time ))
+
+            // Rotate around view-aligned rotation axis
+            let rotation = mat4.fromRotation(mat4.create(), deg2rad(-10 * this.movementY * delta_time ), this.right)
+            this.eye = vec3.transformMat4(vec3.create(), this.eye, rotation)
+
+            // reset movementX and movementY
+            this.movementX = 0
+            this.movementY = 0
+
+            // Set dirty flag to trigger view matrix updates
+            view_dirty = true
+        }
 
         // Control - Move Forward with W
         if (Input.isKeyDown('w')) {

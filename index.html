@@ -46,7 +46,7 @@
                     frequencySlider.oninput = function() {
                         frequencyOutput.innerHTML = this.value;
                     }
-                    </script>
+                </script>
             </div>
             <button class="button" onclick="generateTerrain()">Generate Terrain</button>
         </div>
@@ -54,6 +54,35 @@
         <div id="canvas-container">
             <canvas id="canvas"></canvas>
         </div>
+
+        <script>
+            const canvas = document.getElementById('canvas');
+
+            canvas.addEventListener('click', () => {
+                canvas.requestPointerLock();
+            });
+
+            // Listen for pointer lock change events
+            document.addEventListener('pointerlockchange', () => {
+                if (document.pointerLockElement === canvas) {
+                    console.log('Pointer locked');
+                    document.addEventListener('mousemove', handleMouseMove);
+                } else {
+                    console.log('Pointer unlocked');
+                    document.removeEventListener('mousemove', handleMouseMove);
+                }
+            });
+
+            // Handle relative mouse movement
+            function handleMouseMove(event) {
+                const movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+                const movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+
+                // Use movementX and movementY to control the camera
+                setMovement(movementX, movementY);
+                // Replace the console log with camera rotation or game control logic
+            }
+        </script>
 
         <div id="noise-canvas-container">
             <canvas id="noise-canvas-height"></canvas>
