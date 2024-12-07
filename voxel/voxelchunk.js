@@ -42,7 +42,7 @@ class VoxelChunk {
                 for (let x = 0; x < CHUNK_SIZE; x++) {
                     // return if voxel at (x, y, z) is air
                     const voxel = this.getVoxel(x, y, z)
-                    if (voxel.id == VOXEL_AIR.id) {
+                    if (voxel.id === VOXEL_AIR.id) {
                         continue
                     }
 
@@ -79,14 +79,15 @@ class VoxelChunk {
                 for (let x = 0; x < CHUNK_SIZE; x++) {
                     // return if voxel at (x, y, z) is air
                     const voxel = this.getVoxel(x, y, z)
-                    if (voxel.id == VOXEL_AIR) {
-                        return
+                    if (voxel.id === VOXEL_AIR.id) {
+                        continue
                     }
 
-                    this.indices.push(voxel.color.flat())
+                    this.vertices.push(...voxel.color)
                 }
             }
         }
+        console.log(this.vertices)
 
         // Creates vertex buffer object for vertex data
         gl.bindBuffer( gl.ARRAY_BUFFER, this.vertices_buffer )
@@ -109,10 +110,9 @@ class VoxelChunk {
         }
 
         let a_color = shader.getAttributeLocation( 'a_color' )
-        // console.log(a_color) TODO: figure out why a_color = -1
         if (a_color >= 0) {
             gl.enableVertexAttribArray(a_color)
-            gl.vertexAttribPointer(a_color, 3, gl.FLOAT, false, 0, this.vertices.length / 2)
+            gl.vertexAttribPointer(a_color, 3, gl.FLOAT, false, 0, 4 * this.vertices.length / 2)
         }
 
         gl.bindVertexArray( null )

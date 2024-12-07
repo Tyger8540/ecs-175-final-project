@@ -100,8 +100,7 @@ class WebGlApp
      * Generates Terrain
      */
     generateTerrain() {
-        this.chunkManager = new ChunkManager(this.gl, this.shaders[4], this.numChunks)        
-        this.chunkManager.regenerateAllBuffers()
+        this.chunkManager = new ChunkManager(this.gl, this.shaders[4], this.numChunks)
         let width = 16 * this.numChunks
         let depth = 16 * this.numChunks
         let values = this.procGen.createNoiseMap(width, depth)
