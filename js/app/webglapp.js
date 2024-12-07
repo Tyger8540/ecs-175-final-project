@@ -12,6 +12,7 @@ import { OBJLoader } from '../../assignment3.objloader.js'
 import { Scene, SceneNode } from './scene.js'
 import { ProcGen } from '../../procgen.js'
 import ChunkManager from '../../voxel/chunkmanager.js'
+import Emitter from "../../particles/emitter.js"
 import * as VoxelType from '../../voxel/voxeltypes.js'
 
 /**
@@ -88,6 +89,9 @@ class WebGlApp
         this.chunkManager.regenerateAllBuffers()
 
         this.procGen = new ProcGen()
+
+        let zero = vec3.fromValues(0, 0, 0)
+        this.emitter = new Emitter(zero, zero, zero, zero, 1, 0.5, 0, 0.5, 0, 0, this.shaders[6], gl)
 
         let width = 16
         let height = 16
@@ -232,6 +236,8 @@ class WebGlApp
                 this.updateSceneNode( scene_node, delta_time )
                 break
         }
+
+        this.emitter.update(delta_time)
     }
 
     /**
