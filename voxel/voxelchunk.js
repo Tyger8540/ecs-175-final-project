@@ -104,7 +104,7 @@ class VoxelChunk {
         gl.bindBuffer( gl.ARRAY_BUFFER, null )
     }
 
-    render(gl, xPos, zPos)
+    render(gl, xPos, yPos, zPos)
     {
         // Bind vertex array object
         gl.bindVertexArray( this.vertex_array_object )
@@ -114,7 +114,7 @@ class VoxelChunk {
 
         // set up model matrix
         const model_matrix = mat4.identity(mat4.create())
-        mat4.translate(model_matrix, model_matrix, [xPos, 0, zPos])
+        mat4.translate(model_matrix, model_matrix, [xPos, yPos, zPos])
 
         // Set up shader
         this.shader.use( )
