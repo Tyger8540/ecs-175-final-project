@@ -90,8 +90,15 @@ class WebGlApp
 
         this.procGen = new ProcGen()
 
-        let zero = vec3.create()
-        this.emitter = new Emitter(zero, vec3.fromValues(0, 2, 0), zero, 1, 1, 0.5, 0, 0.5, 0, 0, this.shaders[6], gl)
+
+
+
+        var zero = vec3.create()
+        this.emitter = new Emitter(zero, vec3.fromValues(0.2, 2, 0), zero, 6, vec3.fromValues(1, 0, 0), 0.5, 3, 0.5, 0, 50, 0, 0, this.shaders[6], gl)
+
+
+
+
 
         let width = 16
         let height = 16

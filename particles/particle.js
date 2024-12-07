@@ -10,20 +10,31 @@ class Particle {
      * @param {vec3} position
      * @param {vec3} velocity
      * @param {vec3} acceleration
+     * 
+     * @param {float} rotation_speed
+     * @param {vec3} rotation_axis
+     * 
      * @param {float} gravity
      *  
      * @param {vec3} color
      * @param {float} size
      * @param {float} lifetime
      * 
+     * 
      * @param {Texture} texture
      * @param {Shader} shader
      * @param {WebGL2RenderingContext} gl
      */
-    constructor( position, velocity, acceleration, gravity, color, size, lifetime, texture, shader, gl ) {
-        this.position = position
-        this.velocity = velocity
-        this.acceleration = acceleration
+    constructor( position, velocity, acceleration, rotation_speed, rotation_axis, gravity, color, size, lifetime, texture, shader, gl ) {
+        this.position = vec3.clone(position)
+        this.velocity = vec3.clone(velocity)
+        this.acceleration = vec3.clone(acceleration)
+
+        this.rotation_speed = rotation_speed
+        this.rotation_axis = vec3.clone(rotation_axis)
+        this.rotation = 0.0
+        this.rotation_matrix = mat4.create()
+        
         this.gravity = gravity
         this.gravity_vector = vec3.scale( vec3.create(), vec3.fromValues(0, -1, 0), this.gravity )
 
@@ -60,12 +71,15 @@ class Particle {
      * Updates the properties of the particle with respect to delta time.
      * @param {float} delta 
      */
-    update( delta, gl ) {
+    update( delta ) {
 
         vec3.add( this.position, this.position, vec3.scale(vec3.create(), this.velocity, delta) )
-        //vec3.add( this.velocity, this.velocity, vec3.scale(vec3.create(), this.acceleration, delta) )
+        vec3.add( this.velocity, this.velocity, vec3.scale(vec3.create(), this.acceleration, delta) )
         //console.log(this.acceleration)
-        //vec3.add( this.velocity, this.velocity, vec3.scale(vec3.create(), this.gravity_vector, delta) )
+        vec3.add( this.velocity, this.velocity, vec3.scale(vec3.create(), this.gravity_vector, delta) )
+
+        this.rotation += this.rotation_speed * delta
+        mat4.fromRotation( this.rotation_matrix, this.rotation, this.rotation_axis )
 
         this.age += delta
 
@@ -86,6 +100,7 @@ class Particle {
 
         this.shader.setUniform3f( "u_normal", vec3.fromValues(1, 0, 0) )
         this.shader.setUniform3f( "u_displacement", this.position )
+        this.shader.setUniform4x4f( "u_r", this.rotation_matrix )
 
         gl.drawElements( gl.TRIANGLES, 6, gl.UNSIGNED_INT, 0 )
 
@@ -97,17 +112,26 @@ class Particle {
 
 
     /**
-     * 
+     * Calculates the vertices given size.
      * @param {float} s 
      * @returns {Array}
      */
     calculateVertices( s ) {
-        return [
-            0, s, s,
-            0, -s, s,
-            0, -s, -s,
-            0, s, -s
+        
+        let verts = [
+            vec3.fromValues(0, 0.5, 0.5),
+            vec3.fromValues(0, -0.5, 0.5),
+            vec3.fromValues(0, -0.5, -0.5),
+            vec3.fromValues(0, 0.5, -0.5)
         ]
+
+        let result = []
+
+        for (let i = 0; i < verts.length; i++) {
+            result.push(...vec3.scale(vec3.create(), verts[i], s))
+        }
+
+        return result
     }
 
 

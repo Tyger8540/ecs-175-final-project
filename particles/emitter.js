@@ -10,23 +10,33 @@ class Emitter {
      * @param {vec3} position 
      * @param {vec3} initial_velocity 
      * @param {vec3} linear_acceleration 
+     * 
+     * @param {float} rotation_speed
+     * @param {vec3} rotation_axis
+     * 
      * @param {float} gravity 
+     * 
      * @param {int} max_particles 
      * @param {float} period 
+     * 
      * @param {*} color 
      * @param {float} size
+     * 
      * @param {Texture} texture 
      * @param {Shader} shader 
      * @param {WebGL2RenderingContext} gl 
      */
-    constructor( position, initial_velocity, linear_acceleration, gravity, max_particles, period, color, size, lifetime, texture, shader, gl ) {
+    constructor( position, initial_velocity, linear_acceleration, rotation_speed, rotation_axis, gravity, max_particles, period, color, size, lifetime, texture, shader, gl ) {
         this.list_particles = []
         this.timer = 0.0
 
-        this.position = position
-        this.initial_velocity = initial_velocity
-        this.linear_acceleration = linear_acceleration
+        this.position = vec3.clone(position)
+        this.initial_velocity = vec3.clone(initial_velocity)
+        this.linear_acceleration = vec3.clone(linear_acceleration)
         this.gravity = gravity
+
+        this.rotation_speed = rotation_speed
+        this.rotation_axis = vec3.clone(rotation_axis)
 
         this.max_particles = max_particles
         this.period = period
@@ -44,14 +54,13 @@ class Emitter {
             this.timer += delta
             if ( this.timer >= this.period ) {
                 this.timer -= this.period
-                    this.list_particles.push( new Particle(this.position, this.initial_velocity, this.linear_acceleration, this.gravity, 0, this.size,
-                        this.lifetime, this.texture, this.shader, this.gl))
+                this.list_particles.push( new Particle(this.position, this.initial_velocity, this.linear_acceleration, this.rotation_speed, this.rotation_axis,
+                    this.gravity, 0, this.size, this.lifetime, this.texture, this.shader, this.gl))
             }
         }
 
         for ( let i = 0; i < this.list_particles.length; i++ ) {
-            this.list_particles[i].update( delta, this.gl )
-            console.log(this.list_particles[i].acceleration)
+            this.list_particles[i].update( delta )
         }
     }
 
@@ -59,6 +68,11 @@ class Emitter {
         for ( let i = 0; i < this.list_particles.length; i++ ) {
             this.list_particles[i].render( gl )
         }
+    }
+
+
+    instantiate_particle() {
+
     }
         
 }
