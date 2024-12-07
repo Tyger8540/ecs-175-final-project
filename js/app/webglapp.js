@@ -105,6 +105,11 @@ class WebGlApp
         let values = this.procGen.createNoiseMap(width, depth)
 
         let value
+        // let isMountain = false;
+        let isVerySmallPeak = false;
+        let isSmallPeak = false;
+        let isMediumPeak = false;
+        let isLargePeak = false;
         for (let z = 0; z < depth; z++) {
             for (let x = 0; x < width; x++) {
                 this.chunkManager.setVoxel(x, 0, z, [0, 0, 255])  // set the water voxel at y=0
@@ -119,42 +124,121 @@ class WebGlApp
                 // }
 
                 let r, g, b;
+                let waterValue = 0.2
+                let verySmallPeakValue = 0.95
+                let smallPeakValue = 0.97
+                let mediumPeakValue = 0.985
+                let largePeakValue = 0.995
                 // Convert noise value to water if below threshold
-                if (value < 0.2) {
+                if (value < waterValue) {
                     // water
                     r = 0;
                     g = 0;
                     b = 255;
                 }
-                else if (value < 0.3) {
+                else if (value < 0.35) {
                     // sand
-                    r = 255;
-                    g = 255;
-                    b = 0;
+                    r = 247;
+                    g = 226;
+                    b = 151;
                 }
-                else if (value < 0.5) {
+                else if (value < 0.6) {
                     // grass
                     r = 0;
                     g = 255;
                     b = 0;
                 }
-                else if (value < 0.7) {
+                else if (value < 0.85) {
                     // stone
-                    console.log("stone")
-                    r = 122;
-                    g = 122;
-                    b = 122;
+                    r = 169;
+                    g = 183;
+                    b = 199;
                 }
-                else {
+                else if (value < verySmallPeakValue) {
                     // snow
-                    console.log("snow")
                     r = 255;
                     g = 255;
                     b = 255;
                 }
-                for (let y = 0.2; y <= values[x + z * width]; y += 0.05) {
-                    this.chunkManager.setVoxel(x, Math.ceil((y - 0.2) * 18.75) + 1, z, [r, g, b])
+                else if (value < smallPeakValue) {
+                    // snow
+                    r = 255;
+                    g = 255;
+                    b = 255;
                 }
+                else if (value < mediumPeakValue) {
+                    r = 255;
+                    g = 255;
+                    b = 255;
+                    isSmallPeak = true;
+                }
+                else if (value < largePeakValue) {
+                    r = 255;
+                    g = 255;
+                    b = 255;
+                    isMediumPeak = true;
+                }
+                else {
+                    r = 255;
+                    g = 255;
+                    b = 255;
+                    isLargePeak = true;
+                }
+
+                // EVERYTHING FITS IN ONE CHUNK EXCEPT FOR RARE MOUNTAINS, WHICH ARE LESS RARE WITH HIGHER FREQUENCY
+                // if (isMountain) {
+                //     console.log(value)
+                //     for (let y = 0.95; y <= value; y += (1 - mountainValue) / 32) {
+                //         // console.log(y)
+                //         this.chunkManager.setVoxel(x, Math.ceil((y - mountainValue) * ((32 - 1) / (1 - mountainValue))) + 1, z, [r/255, g/255, b/255])
+                //     }
+                // } else {
+                //     for (let y = 0.2; y <= value; y += (1 - waterValue) / 16) {
+                //         this.chunkManager.setVoxel(x, Math.ceil((y - waterValue) * ((16 - 1) / (1 - waterValue))) + 1, z, [r/255, g/255, b/255])
+                //     }
+                //     if (isMountain) {
+                //         for (let y = 0.95; y <= value; y += (1 - mountainValue) / 16) {
+                //             // console.log(y)
+                //             this.chunkManager.setVoxel(x, Math.ceil((y - mountainValue) * ((16 - 1) / (1 - mountainValue))) + 1 + 16, z, [r/255, g/255, b/255])
+                //         }
+                //     }
+                // }
+
+                for (let y = 0.2; y <= value; y += (1 - waterValue) / 16) {
+                    if (y > waterValue) {
+                        this.chunkManager.setVoxel(x, Math.ceil((y - waterValue) * ((16 - 1) / (1 - waterValue))), z, [r/255, g/255, b/255])
+                    }
+                }
+
+                // GENERATE TALLER MOUNTAINS
+                if (isVerySmallPeak) {
+                    for (let y = verySmallPeakValue; y <= value; y += (1 - verySmallPeakValue) / 4) {
+                        this.chunkManager.setVoxel(x, Math.ceil((y - verySmallPeakValue) * ((4 - 1) / (1 - verySmallPeakValue))) + 16, z, [r/255, g/255, b/255])
+                    }
+                    isVerySmallPeak = false;
+                }
+                else if (isSmallPeak) {
+                    for (let y = smallPeakValue; y <= value; y += (1 - smallPeakValue) / 8) {
+                        this.chunkManager.setVoxel(x, Math.ceil((y - smallPeakValue) * ((8 - 1) / (1 - smallPeakValue))) + 16, z, [r/255, g/255, b/255])
+                    }
+                    isSmallPeak = false;
+                } else if (isMediumPeak) {
+                    for (let y = mediumPeakValue; y <= value; y += (1 - mediumPeakValue) / 12) {
+                        this.chunkManager.setVoxel(x, Math.ceil((y - mediumPeakValue) * ((12 - 1) / (1 - mediumPeakValue))) + 16, z, [r/255, g/255, b/255])
+                    }
+                    isMediumPeak = false;
+                } else if (isLargePeak) {
+                    for (let y = largePeakValue; y <= value; y += (1 - largePeakValue) / 16) {
+                        this.chunkManager.setVoxel(x, Math.ceil((y - largePeakValue) * ((16 - 1) / (1 - largePeakValue))) + 16, z, [r/255, g/255, b/255])
+                    }
+                    isLargePeak = false;
+                }
+
+
+                // EVERYTHING FITS IN THE 2 CHUNK HEIGHT
+                // for (let y = 0.4; y <= values[x + z * width]; y += 0.0125) {
+                //     this.chunkManager.setVoxel(x, Math.ceil((y - 0.4) * 53.33) + 1, z, [r/255, g/255, b/255])
+                // }
             }
         }
         this.chunkManager.regenerateAllBuffers()
