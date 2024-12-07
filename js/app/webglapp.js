@@ -292,16 +292,20 @@ class WebGlApp
         //     view_dirty = true
         // }
 
-        var slider = document.getElementById("movementSpeedSlider")
-        let move_speed = slider.value
+        var movementSpeedSlider = document.getElementById("movementSpeedSlider")
+        let move_speed = movementSpeedSlider.value
+
+        var sensitivitySlider = document.getElementById("sensitivitySlider")
+        let sensitivity = sensitivitySlider.value
+
 
         // Control - FPS-style Camera Rotation
         if (this.movementX != 0 || this.movementY != 0) {
             // Rotate around xz plane around y
-            this.eye = vec3.rotateY(vec3.create(), this.eye, this.center, deg2rad(-10 * this.movementX * delta_time ))
+            this.eye = vec3.rotateY(vec3.create(), this.eye, this.center, deg2rad(-sensitivity * this.movementX * delta_time ))
 
             // Rotate around view-aligned rotation axis
-            let rotation = mat4.fromRotation(mat4.create(), deg2rad(-10 * this.movementY * delta_time ), this.right)
+            let rotation = mat4.fromRotation(mat4.create(), deg2rad(-sensitivity * this.movementY * delta_time ), this.right)
             this.eye = vec3.transformMat4(vec3.create(), this.eye, rotation)
 
             // reset movementX and movementY
