@@ -1,6 +1,6 @@
 import * as vec3 from "../js/lib/glmatrix/vec3.js"
-import * as Texture from "../assignment3.texture.js"
 import * as mat4 from "../js/lib/glmatrix/mat4.js"
+import { Texture } from "../assignment3.texture.js"
 import { Shader } from "../js/utils/shader.js"
 
 
@@ -85,7 +85,7 @@ class Particle {
         gl.drawElements( gl.TRIANGLES, 4, gl.UNSIGNED_INT, 0 )
 
         gl.bindVertexArray( null )
-        
+
         this.shader.unuse()
     }
 
@@ -151,3 +151,5 @@ class Particle {
         gl,bindBuffer(gl.ARRAY_BUFFER, null)
     }
 }
+
+export default Particle
