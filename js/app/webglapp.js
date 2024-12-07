@@ -83,10 +83,12 @@ class WebGlApp
             shader.setUniform4x4f('u_p', this.projection)
             shader.unuse()
         }
+        
+        this.gl = gl
 
         this.numChunks = 10
 
-        this.chunkManager = new ChunkManager(gl, this.shaders[4], this.numChunks)        
+        this.chunkManager = new ChunkManager(this.gl, this.shaders[4], this.numChunks)        
         this.chunkManager.regenerateAllBuffers()
 
         this.procGen = new ProcGen()
@@ -98,16 +100,21 @@ class WebGlApp
      * Generates Terrain
      */
     generateTerrain() {
+        this.chunkManager = new ChunkManager(this.gl, this.shaders[4], this.numChunks)        
+        this.chunkManager.regenerateAllBuffers()
         let width = 16 * this.numChunks
-        let height = 16 * this.numChunks
-        let values = this.procGen.createNoiseMap(width, height)
+        let depth = 16 * this.numChunks
+        let values = this.procGen.createNoiseMap(width, depth)
 
-        for (let y = 0; y < height; y++) {
+        for (let z = 0; z < depth; z++) {
             for (let x = 0; x < width; x++) {
-                if (values[x + y * width] < 0.2) {
-                    this.chunkManager.setVoxel(x, 0, y, VoxelType.VOXEL_AIR)
+                if (values[x + z * width] < 0.2) {
+                    this.chunkManager.setVoxel(x, 0, z, VoxelType.VOXEL_AIR)
                 } else {
-                    this.chunkManager.setVoxel(x, 0, y, VoxelType.VOXEL_GRASS)
+                    for (let y = 0.2; y <= values[x + z * width]; y += 0.05) {
+                        this.chunkManager.setVoxel(x, Math.ceil((y - 0.2) * 18.75), z, VoxelType.VOXEL_GRASS)
+                    }
+                    this.chunkManager.setVoxel(x, 0, z, VoxelType.VOXEL_GRASS)
                 }
             }
         }
