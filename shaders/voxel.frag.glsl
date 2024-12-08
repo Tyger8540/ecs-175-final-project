@@ -15,6 +15,4 @@ out vec4 o_fragColor;
 void main() {
     vec3 color = o_color * u_shading[int(o_faceId)];
     o_fragColor = vec4(color, 1.0);
-
-    o_fragColor = vec4(vec3(u_shading[int(o_faceId)]), 1.0);
 }
