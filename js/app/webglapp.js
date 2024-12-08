@@ -155,6 +155,7 @@ class WebGlApp
         let width = 16 * this.numChunks
         let depth = 16 * this.numChunks
         let values = this.procGen.createNoiseMap(width, depth)
+        let treeValues = this.procGen.createNoiseMapTrees(width, depth)
 
         let value
         // let isMountain = false;
@@ -185,6 +186,8 @@ class WebGlApp
                 let smallPeakValue = 0.92
                 let mediumPeakValue = 0.935
                 let largePeakValue = 0.945
+                let surfaceY = 0
+                let surfaceColor
                 // Convert noise value to water if below threshold
                 if (value <= waterValue) {
                     // water
@@ -309,6 +312,7 @@ class WebGlApp
                 for (let y = 0.2; y <= value; y += (1 - waterValue) / 16) {
                     if (y > waterValue) {
                         this.chunkManager.setVoxel(x, Math.ceil((y - waterValue) * ((16 - 1) / (1 - waterValue))), z, [r/255, g/255, b/255])
+                        surfaceY = surfaceY + 1
                         // console.log(15 == Math.ceil((y - waterValue) * ((16 - 1) / (1 - waterValue))))
                     }
                 }
@@ -318,37 +322,62 @@ class WebGlApp
                     if (isVerySmallPeak) {
                         for (let y = verySmallPeakValue; y <= value; y += (smallPeakValue - verySmallPeakValue) / 4) {
                             this.chunkManager.setVoxel(x, Math.ceil((y - verySmallPeakValue) * ((4 - 1) / (1 - verySmallPeakValue))) + 15, z, [r/255, g/255, b/255])
+                            surfaceY = surfaceY + 1
                         }
                         isVerySmallPeak = false;
                     }
                     else if (isSmallPeak) {
                         for (let i = 15; i < 19; i++) {
                             this.chunkManager.setVoxel(x, i, z, [r/255, g/255, b/255])
+                            surfaceY = surfaceY + 1
                         }
                         for (let y = smallPeakValue; y <= value; y += (mediumPeakValue - smallPeakValue) / 4) {
                             this.chunkManager.setVoxel(x, Math.ceil((y - smallPeakValue) * ((4 - 1) / (1 - smallPeakValue))) + 19, z, [r/255, g/255, b/255])
+                            surfaceY = surfaceY + 1
                         }
                         isSmallPeak = false;
                     } else if (isMediumPeak) {
                         for (let i = 15; i < 23; i++) {
                             this.chunkManager.setVoxel(x, i, z, [r/255, g/255, b/255])
+                            surfaceY = surfaceY + 1
                         }
                         for (let y = mediumPeakValue; y <= value; y += (largePeakValue - mediumPeakValue) / 4) {
                             this.chunkManager.setVoxel(x, Math.ceil((y - mediumPeakValue) * ((4 - 1) / (1 - mediumPeakValue))) + 23, z, [r/255, g/255, b/255])
+                            surfaceY = surfaceY + 1
                         }
                         isMediumPeak = false;
                     } else if (isLargePeak) {
                         for (let i = 15; i < 27; i++) {
                             this.chunkManager.setVoxel(x, i, z, [r/255, g/255, b/255])
+                            surfaceY = surfaceY + 1
                         }
                         for (let y = largePeakValue; y <= value; y += (1 - largePeakValue) / 4) {
                             this.chunkManager.setVoxel(x, Math.ceil((y - largePeakValue) * ((4 - 1) / (1 - largePeakValue))) + 27, z, [r/255, g/255, b/255])
+                            surfaceY = surfaceY + 1
                         }
                         isLargePeak = false;
                     }
                     // for (let y = verySmallPeakValue; y <= value; y += (1 - verySmallPeakValue) / 16) {
                     //     this.chunkManager.setVoxel(x, Math.ceil((y - verySmallPeakValue) * ((16 - 1) / (1 - verySmallPeakValue))) + 16, z, [r/255, g/255, b/255])
                     // }
+                }
+
+                surfaceColor = [r/255, g/255, b/255]
+
+                if (x + 1 < width && z + 1 < depth && x - 1 >= 0 && z - 1 >= 0) {
+                    let treeValue = treeValues[x + z * width]
+                    if (treeValue > treeValues[x + z * width + 1] &&
+                        treeValue > treeValues[x + z * width - 1] &&
+                        treeValue > treeValues[x + (z + 1) * width] &&
+                        treeValue > treeValues[x + (z - 1) * width]) {
+
+                        // Make tree if on grass
+                        let grassColor = [0/255, 255/255, 0/255]
+                        if (this.colorsEqual(surfaceColor, grassColor)) {
+                            let buildHeight = height * 16 - 1
+                            this.createTree(x, z, surfaceY, buildHeight)
+                        }
+                    }
                 }
 
 
@@ -359,6 +388,40 @@ class WebGlApp
             }
         }
         this.chunkManager.regenerateAllBuffers()
+    }
+
+    createTree(x, z, surfaceY, buildHeight) {
+        let brown = [110/255, 63/255, 44/255]
+        let green = [44/255, 110/255, 48/255]
+        if (surfaceY + 4 <= buildHeight) {
+            // Wood
+            this.chunkManager.setVoxel(x, surfaceY + 1, z, brown)
+            this.chunkManager.setVoxel(x, surfaceY + 2, z, brown)
+            this.chunkManager.setVoxel(x, surfaceY + 3, z, brown)
+
+            // Leaves
+            this.chunkManager.setVoxel(x, surfaceY + 4, z, green)
+            this.chunkManager.setVoxel(x + 1, surfaceY + 2, z, green)
+            this.chunkManager.setVoxel(x + 1, surfaceY + 3, z, green)
+            this.chunkManager.setVoxel(x, surfaceY + 2, z + 1, green)
+            this.chunkManager.setVoxel(x, surfaceY + 3, z + 1, green)
+            this.chunkManager.setVoxel(x - 1, surfaceY + 2, z, green)
+            this.chunkManager.setVoxel(x - 1, surfaceY + 3, z, green)
+            this.chunkManager.setVoxel(x, surfaceY + 2, z - 1, green)
+            this.chunkManager.setVoxel(x, surfaceY + 3, z - 1, green)
+        }
+    }
+
+    colorsEqual(color1, color2) {
+        if (color1.length != color2.length) {
+            return false;
+        }
+        for (let i = 0; i < color1.length; i++) {
+            if (color1[i] != color2[i]) {
+                return false;
+            }
+        }
+        return true
     }
 
     setMovement(moveX, moveY) {
