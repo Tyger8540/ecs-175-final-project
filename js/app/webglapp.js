@@ -97,10 +97,15 @@ class WebGlApp
 
 
         var zero = vec3.create()
-        this.emitter = new Emitter(vec3.fromValues(0, 20, 0), vec3.fromValues(50, 0, 50), 200, 0.8, vec3.fromValues(-0.2, -1, 0), 0.1, vec3.fromValues(0, -20, 0), 0.5, true, 0, 0, vec3.fromValues(0, 1, 0),
+        this.rain = new Emitter(vec3.fromValues(0, 20, 0), vec3.fromValues(50, 0, 50), 200, 0.1, vec3.fromValues(-0.2, -1, 0), 0.1, vec3.fromValues(0, -20, 0), 0.5, true, 0, 0, vec3.fromValues(0, 1, 0),
             0, 600, 0.002, vec3.fromValues(0.2, 0.2, 1.0), vec3.fromValues(0.05, 0.05, 1), 1, this.shaders[6]
             )
 
+        this.rain.disable()
+
+        this.snow = new Emitter(vec3.fromValues(0, 20, 0), vec3.fromValues(200, 0, 200), 12, 0.8, vec3.fromValues(-0.2, -1, 0), 0.05, vec3.fromValues(0, 0, 0), 0.1, true, 0, 0, vec3.fromValues(0, 1, 0),
+            0, 1600, 0.005, vec3.fromValues(0.9, 0.9, 0.9), vec3.fromValues(0.15, 0.15, 0.15), 8, this.shaders[6]
+            )
 
 
 
@@ -531,7 +536,8 @@ class WebGlApp
                 break
         }
 
-        this.emitter.update(delta_time, gl)
+        this.rain.update(delta_time, gl)
+        this.snow.update(delta_time, gl)
         //console.log(1/delta_time)
     }
 
@@ -778,7 +784,8 @@ class WebGlApp
             // this.updateViewSpaceVectors()
 
             this.view = mat4.lookAt(mat4.create(), this.eye, this.center, this.up)
-            this.emitter.update_position(this.eye)
+            this.rain.update_position(this.eye)
+            this.snow.update_position(this.eye)
             this.box.update_position(this.eye)
 
             for (let shader of this.shaders) {
@@ -900,7 +907,8 @@ class WebGlApp
         // render chunk manager
         this.chunkManager.render(gl)
 
-        this.emitter.render( gl )
+        this.rain.render( gl )
+        this.snow.render( gl )
 
         // Render the scene
         if (this.scene) this.scene.render( gl )
