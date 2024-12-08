@@ -95,7 +95,6 @@ class WebGlApp
 
 
 
-
         var zero = vec3.create()
         this.rain = new Emitter(vec3.fromValues(0, 20, 0), vec3.fromValues(50, 0, 50), 200, 0.1, vec3.fromValues(-0.2, -1, 0), 0.1, vec3.fromValues(0, -20, 0), 0.5, true, 0, 0, vec3.fromValues(0, 1, 0),
             0, 600, 0.002, vec3.fromValues(0.2, 0.2, 1.0), vec3.fromValues(0.05, 0.05, 1), 1, this.shaders[6]
@@ -106,8 +105,17 @@ class WebGlApp
         this.snow = new Emitter(vec3.fromValues(0, 20, 0), vec3.fromValues(200, 0, 200), 12, 0.8, vec3.fromValues(-0.2, -1, 0), 0.05, vec3.fromValues(0, 0, 0), 0.1, true, 0, 0, vec3.fromValues(0, 1, 0),
             0, 1600, 0.005, vec3.fromValues(0.9, 0.9, 0.9), vec3.fromValues(0.15, 0.15, 0.15), 8, this.shaders[6]
             )
+    
+        this.null_weather = new Emitter(zero, zero, 0, 0, zero, 0, 0, 0.0, true, 0, 0, zero,
+        0, 0, 60, zero, zero, 1, this.shaders[6]
+        )
 
+        this.weathers = [this.rain, this.snow, this.null_weather]
+        this.weather_id = 0
 
+        this.weathers[this.weather_id].enable()
+
+        this.setWeather(0)
 
 
         let width = 16
@@ -433,6 +441,13 @@ class WebGlApp
     setMovement(moveX, moveY) {
         this.movementX = moveX
         this.movementY = moveY
+    }
+
+
+    setWeather( id ) {
+        this.weathers[this.weather_id].disable()
+        this.weather_id = id
+        this.weathers[this.weather_id].enable()
     }
 
     /**
@@ -907,8 +922,7 @@ class WebGlApp
         // render chunk manager
         this.chunkManager.render(gl)
 
-        this.rain.render( gl )
-        this.snow.render( gl )
+        this.weathers[this.weather_id].render( gl )
 
         // Render the scene
         if (this.scene) this.scene.render( gl )
