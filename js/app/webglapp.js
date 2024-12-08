@@ -111,6 +111,8 @@ class WebGlApp
 
         this.movementX = 0
         this.movementY = 0
+        this.yaw
+        this.pitch
     }
 
 
@@ -533,15 +535,26 @@ class WebGlApp
         var sensitivitySlider = document.getElementById("sensitivitySlider")
         let sensitivity = sensitivitySlider.value
 
+        // Yaw (horizontal angle) and pitch (vertical angle) state
+        if (this.yaw === undefined) this.yaw = 0;
+        if (this.pitch === undefined) this.pitch = 0;
 
         // Control - FPS-style Camera Rotation
         if (this.movementX != 0 || this.movementY != 0) {
             // Rotate around xz plane around y
-            this.eye = vec3.rotateY(vec3.create(), this.eye, this.center, deg2rad(-sensitivity * this.movementX * delta_time ))
+            // this.eye = vec3.rotateY(vec3.create(), this.eye, this.center, deg2rad(-sensitivity * this.movementX * delta_time ))
 
-            // Rotate around view-aligned rotation axis
-            let rotation = mat4.fromRotation(mat4.create(), deg2rad(-sensitivity * this.movementY * delta_time ), this.right)
-            this.eye = vec3.transformMat4(vec3.create(), this.eye, rotation)
+            // // Rotate around view-aligned rotation axis
+            // let rotation = mat4.fromRotation(mat4.create(), deg2rad(-sensitivity * this.movementY * delta_time ), this.right)
+            // this.eye = vec3.transformMat4(vec3.create(), this.eye, rotation)
+
+            this.yaw -= sensitivity * this.movementX * delta_time;
+            this.pitch -= sensitivity * this.movementY * delta_time;
+
+            // Clamp pitch to prevent flipping
+            const maxPitch = Math.PI / 2 - 0.01;
+            if (this.pitch > maxPitch) this.pitch = maxPitch;
+            if (this.pitch < -maxPitch) this.pitch = -maxPitch;
 
             // reset movementX and movementY
             this.movementX = 0
@@ -549,6 +562,32 @@ class WebGlApp
 
             // Set dirty flag to trigger view matrix updates
             view_dirty = true
+        }
+
+        // Recompute forward, right, and up vectors based on yaw and pitch
+        if (view_dirty) {
+            const cosPitch = Math.cos(this.pitch);
+            this.forward = vec3.normalize(
+                vec3.create(),
+                vec3.fromValues(
+                    Math.sin(this.yaw) * cosPitch,
+                    Math.sin(this.pitch),
+                    Math.cos(this.yaw) * cosPitch
+                )
+            );
+
+            this.right = vec3.normalize(
+                vec3.create(),
+                vec3.cross(vec3.create(), this.forward, [0, 1, 0])
+            );
+
+            this.up = vec3.normalize(
+                vec3.create(),
+                vec3.cross(vec3.create(), this.right, this.forward)
+            );
+
+            // Update camera center
+            this.center = vec3.add(vec3.create(), this.eye, this.forward);
         }
 
         /*
@@ -570,91 +609,106 @@ class WebGlApp
         }
         */
 
-        // Control - Move Forward with W
-        if (Input.isKeyDown('w')) {
-            // Create translation forward
-            let translation = vec3.scale(vec3.create(), this.forward, -move_speed * delta_time)
+        // // Control - Move Forward with W
+        // if (Input.isKeyDown('w')) {
+        //     // Create translation forward
+        //     let translation = vec3.scale(vec3.create(), this.forward, -move_speed * delta_time)
 
-            // Translate the eye
-            this.eye = vec3.add(vec3.create(), this.eye, translation)
-            this.center = vec3.add(vec3.create(), this.center, translation)
+        //     // Translate the eye
+        //     this.eye = vec3.add(vec3.create(), this.eye, translation)
+        //     this.center = vec3.add(vec3.create(), this.center, translation)
 
-            // let procGen = new(ProcGen)
-            // procGen.createNoise()
+        //     // let procGen = new(ProcGen)
+        //     // procGen.createNoise()
 
-            // Set dirty flag to trigger view matrix updates
-            view_dirty = true
-        }
+        //     // Set dirty flag to trigger view matrix updates
+        //     view_dirty = true
+        // }
 
-        // Control - Move Backward with S
-        if (Input.isKeyDown('s')) {
-            // Create translation forward
-            let translation = vec3.scale(vec3.create(), this.forward, move_speed * delta_time)
+        // // Control - Move Backward with S
+        // if (Input.isKeyDown('s')) {
+        //     // Create translation forward
+        //     let translation = vec3.scale(vec3.create(), this.forward, move_speed * delta_time)
 
-            // Translate the eye
-            this.eye = vec3.add(vec3.create(), this.eye, translation)
-            this.center = vec3.add(vec3.create(), this.center, translation)
+        //     // Translate the eye
+        //     this.eye = vec3.add(vec3.create(), this.eye, translation)
+        //     this.center = vec3.add(vec3.create(), this.center, translation)
 
-            // Set dirty flag to trigger view matrix updates
-            view_dirty = true
-        }
+        //     // Set dirty flag to trigger view matrix updates
+        //     view_dirty = true
+        // }
 
-        // Control - Move Left with A
-        if (Input.isKeyDown('a')) {
-            // Create translation forward
-            let translation = vec3.scale(vec3.create(), this.right, -move_speed * delta_time)
+        // // Control - Move Left with A
+        // if (Input.isKeyDown('a')) {
+        //     // Create translation forward
+        //     let translation = vec3.scale(vec3.create(), this.right, -move_speed * delta_time)
 
-            // Translate both eye and center in parallel
-            this.eye = vec3.add(vec3.create(), this.eye, translation)
-            this.center = vec3.add(vec3.create(), this.center, translation)
+        //     // Translate both eye and center in parallel
+        //     this.eye = vec3.add(vec3.create(), this.eye, translation)
+        //     this.center = vec3.add(vec3.create(), this.center, translation)
 
-            // Set dirty flag to trigger view matrix updates
-            view_dirty = true
-        }
+        //     // Set dirty flag to trigger view matrix updates
+        //     view_dirty = true
+        // }
 
-        // Control - Move Right with D
-        if (Input.isKeyDown('d')) {
-            // Create translation forward
-            let translation = vec3.scale(vec3.create(), this.right, move_speed * delta_time)
+        // // Control - Move Right with D
+        // if (Input.isKeyDown('d')) {
+        //     // Create translation forward
+        //     let translation = vec3.scale(vec3.create(), this.right, move_speed * delta_time)
 
-            // Translate both eye and center in parallel
-            this.eye = vec3.add(vec3.create(), this.eye, translation)
-            this.center = vec3.add(vec3.create(), this.center, translation)
+        //     // Translate both eye and center in parallel
+        //     this.eye = vec3.add(vec3.create(), this.eye, translation)
+        //     this.center = vec3.add(vec3.create(), this.center, translation)
 
-            // Set dirty flag to trigger view matrix updates
-            view_dirty = true
-        }
+        //     // Set dirty flag to trigger view matrix updates
+        //     view_dirty = true
+        // }
 
-        // Control - Move Up with Space
-        if (Input.isKeyDown(' ')) {
-            // Create translation forward
-            let translation = vec3.scale(vec3.create(), this.up, move_speed * delta_time)
+        // // Control - Move Up with Space
+        // if (Input.isKeyDown(' ')) {
+        //     // Create translation forward
+        //     let translation = vec3.scale(vec3.create(), this.up, move_speed * delta_time)
 
-            // Translate both eye and center in parallel
-            this.eye = vec3.add(vec3.create(), this.eye, translation)
-            this.center = vec3.add(vec3.create(), this.center, translation)
+        //     // Translate both eye and center in parallel
+        //     this.eye = vec3.add(vec3.create(), this.eye, translation)
+        //     this.center = vec3.add(vec3.create(), this.center, translation)
 
-            // Set dirty flag to trigger view matrix updates
-            view_dirty = true
-        }
+        //     // Set dirty flag to trigger view matrix updates
+        //     view_dirty = true
+        // }
 
-        // Control - Move Down with C
-        if (Input.isKeyDown('c')) {
-            // Create translation forward
-            let translation = vec3.scale(vec3.create(), this.up, -move_speed * delta_time)
+        // // Control - Move Down with C
+        // if (Input.isKeyDown('c')) {
+        //     // Create translation forward
+        //     let translation = vec3.scale(vec3.create(), this.up, -move_speed * delta_time)
 
-            // Translate both eye and center in parallel
-            this.eye = vec3.add(vec3.create(), this.eye, translation)
-            this.center = vec3.add(vec3.create(), this.center, translation)
+        //     // Translate both eye and center in parallel
+        //     this.eye = vec3.add(vec3.create(), this.eye, translation)
+        //     this.center = vec3.add(vec3.create(), this.center, translation)
 
-            // Set dirty flag to trigger view matrix updates
-            view_dirty = true
+        //     // Set dirty flag to trigger view matrix updates
+        //     view_dirty = true
+        // }
+
+        const translation = vec3.create();
+
+        if (Input.isKeyDown('w')) vec3.scaleAndAdd(translation, translation, this.forward, move_speed * delta_time);
+        if (Input.isKeyDown('s')) vec3.scaleAndAdd(translation, translation, this.forward, -move_speed * delta_time);
+        if (Input.isKeyDown('a')) vec3.scaleAndAdd(translation, translation, this.right, -move_speed * delta_time);
+        if (Input.isKeyDown('d')) vec3.scaleAndAdd(translation, translation, this.right, move_speed * delta_time);
+        if (Input.isKeyDown(' ')) vec3.scaleAndAdd(translation, translation, this.up, move_speed * delta_time);
+        if (Input.isKeyDown('c')) vec3.scaleAndAdd(translation, translation, this.up, -move_speed * delta_time);
+
+        if (!vec3.exactEquals(translation, vec3.create())) {
+            vec3.add(this.eye, this.eye, translation);
+            vec3.add(this.center, this.eye, this.forward);
+            view_dirty = true;
         }
 
         // Update view matrix if needed
         if (view_dirty) {
             // Update Forward, Right, and Up vectors
-            this.updateViewSpaceVectors()
+            // this.updateViewSpaceVectors()
 
             this.view = mat4.lookAt(mat4.create(), this.eye, this.center, this.up)
             this.emitter.update_position(this.eye)
