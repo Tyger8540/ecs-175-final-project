@@ -97,18 +97,18 @@ class WebGlApp
 
         var zero = vec3.create()
         this.rain = new Emitter(vec3.fromValues(0, 20, 0), vec3.fromValues(50, 0, 50), 200, 0.1, vec3.fromValues(-0.2, -1, 0), 0.1, vec3.fromValues(0, -20, 0), 0.5, true, 0, 0, vec3.fromValues(0, 1, 0),
-            0, 600, 0.002, vec3.fromValues(0.2, 0.2, 1.0), vec3.fromValues(0.05, 0.05, 1), 1, this.shaders[6]
+            0, 600, 0.002, [0.2, 0.2, 1.0], vec3.fromValues(0.05, 0.05, 1), 1, this.shaders[6]
             )
 
         this.snow = new Emitter(vec3.fromValues(0, 20, 0), vec3.fromValues(200, 0, 200), 12, 0.8, vec3.fromValues(-0.2, -1, 0), 0.05, vec3.fromValues(0, 0, 0), 0.1, true, 0, 0, vec3.fromValues(0, 1, 0),
-            0, 1600, 0.005, vec3.fromValues(0.9, 0.9, 0.9), vec3.fromValues(0.15, 0.15, 0.15), 8, this.shaders[6]
+            0, 1600, 0.005, [0.9, 0.9, 0.9], vec3.fromValues(0.15, 0.15, 0.15), 8, this.shaders[6]
             )
     
         this.null_weather = new Emitter(zero, zero, 0, 0, zero, 0, 0, 0.0, true, 0, 0, zero,
         0, 0, 60, zero, zero, 1, this.shaders[6]
         )
 
-        this.smoke = new Emitter([-1, 0, -1], [1, 0, 1], 5, 0.2, [0, 1, 0], 0.5, zero, 0, false, 0, 0, zero, 0, 20, 0.2, [0.5, 0.5, 0.5, 0.2], [0.7, 0.7, 0.7], 2, this.shaders[6])
+        this.smoke = new Emitter([-1, 0, -1], [2, 1, 2], 3, 0.2, [0, 1, 0], 0.2, zero, 0.1, false, 2, 0.5, [1, 0, 0], 1.5, 120, 0.2, [0.5, 0.5, 0.5], [0.4, 0.4, 0.4], 16, this.shaders[6])
         this.smoke.enable()
 
         this.weathers = [this.rain, this.snow, this.null_weather]
