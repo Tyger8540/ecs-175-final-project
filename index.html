@@ -21,7 +21,7 @@
                 <div class="setting-item-container">
                     <input type="range" min="5" max="50" value="50" class="slider" id="movementSpeedSlider">
                 </div>
-                <p>Value: <span id="movementSpeedValue"></span></p>
+                <p><span id="movementSpeedValue"></span></p>
                 <script>
                     var movementSpeedSlider = document.getElementById("movementSpeedSlider");
                     var movementSpeedOutput = document.getElementById("movementSpeedValue");
@@ -40,7 +40,7 @@
                 <div class="setting-item-container">
                     <input type="range" step="0.1" min="0.1" max="2" value="0.5" class="slider" id="sensitivitySlider">
                 </div>
-                <p>Value: <span id="sensitivityValue"></span></p>
+                <p><span id="sensitivityValue"></span></p>
                 <script>
                     var sensitivitySlider = document.getElementById("sensitivitySlider");
                     var sensitivityOutput = document.getElementById("sensitivityValue");
@@ -59,7 +59,7 @@
                 <div class="setting-item-container">
                     <input type="range" min="1" max="10" value="10" class="slider" id="frequencySlider">
                 </div>
-                <p>Value: <span id="frequencyValue"></span></p>
+                <p><span id="frequencyValue"></span></p>
                 <script>
                     var frequencySlider = document.getElementById("frequencySlider");
                     var frequencyOutput = document.getElementById("frequencyValue");
@@ -74,11 +74,30 @@
                 </script>
             </div>
             <div class="setting">
-                <h3>Height</h3>
+                <h3>Terrain Width</h3>
+                <div class="setting-item-container">
+                    <input type="range" min="1" max="10" value="5" class="slider" id="widthSlider">
+                </div>
+                <p><span id="widthValue"></span></p>
+                <script>
+                    var widthSlider = document.getElementById("widthSlider");
+                    var widthOutput = document.getElementById("widthValue");
+                    widthOutput.innerHTML = widthSlider.value;
+                    
+                    function updateWidthSliderValue() {
+                        widthOutput.innerHTML = this.value;
+                    }
+
+                    widthSlider.addEventListener("input", updateWidthSliderValue);
+                    widthSlider.addEventListener("change", updateWidthSliderValue);
+                </script>
+            </div>
+            <div class="setting">
+                <h3>Terrain Height</h3>
                 <div class="setting-item-container">
                     <input type="range" min="1" max="2" value="2" class="slider" id="heightSlider">
                 </div>
-                <p>Value: <span id="heightValue"></span></p>
+                <p><span id="heightValue"></span></p>
                 <script>
                     var heightSlider = document.getElementById("heightSlider");
                     var heightOutput = document.getElementById("heightValue");

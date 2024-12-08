@@ -148,7 +148,10 @@ class WebGlApp
     generateTerrain() {
         var heightSlider = document.getElementById("heightSlider")
         let height = heightSlider.value
+        let widthSlider = document.getElementById("widthSlider")
+        this.numChunks = widthSlider.value
         this.chunkManager = new ChunkManager(this.gl, this.shaders[4], this.numChunks, height)
+
         let width = 16 * this.numChunks
         let depth = 16 * this.numChunks
         let values = this.procGen.createNoiseMap(width, depth)

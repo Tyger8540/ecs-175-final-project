@@ -169,6 +169,30 @@ class ProcGen
         return values;
     }
 
+    createNoiseMapTrees(width, height) {
+        let gen = createNoise2D();
+        function noise(nx, ny) {
+            // Rescale from -1.0:+1.0 to 0.0:1.0
+            return gen(nx, ny) / 2 + 0.5;
+        }
+          
+        // var frequencySlider = document.getElementById("frequencySlider")
+        // let frequency = frequencySlider.value
+
+        let values = [];
+
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {      
+                let nx = x/width - 0.5, ny = y/height - 0.5;
+                let e = noise(nx, ny);
+                // let e = 1 * frequency * noise(1 * nx, 1 * ny) + 0.5 * frequency * noise(2 * nx, 2 * ny) + 0.25 * frequency * noise(4 * nx, 4 * ny);
+                // e = e / (frequency * (1 + 0.5 + 0.25));
+                // values.push(Math.pow(e, 2));
+                values.push(e)
+            }
+        }
+    }
+
     createNoiseMap3D(width, height, depth) {
         let gen = createNoise3D();
         function noise(nx, ny, nz) {
