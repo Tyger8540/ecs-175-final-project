@@ -67,7 +67,7 @@ class Emitter {
     update ( delta, gl ) {
         //console.log("asdfasdfasdf")
         if ( this.list_particles.length < this.max_particles && this.active ){
-            this.timer += delta
+            this.timer += Math.min(delta, 0.1)
             while ( this.timer >= this.period ) {
                 this.timer -= this.period
                 this.instantiate_particle( gl )
