@@ -44,15 +44,6 @@ class VoxelChunk {
                     }
 
                     // instantiate a cube relative to coords
-                    // const newVertices = [[0, 0, 0], [1, 0, 0], [1, 0, 1], [0, 0, 1], [0, 1, 0], [1, 1, 0], [1, 1, 1], [0, 1, 1]]
-                    // const newIndices = [
-                    //     [0, 1, 2], [0, 2, 3], // bottom
-                    //     [0, 1, 5], [0, 5, 4], // front
-                    //     [1, 2, 6], [1, 6, 5], // right
-                    //     [3, 2, 6], [3, 6, 7], // back
-                    //     [0, 3, 7], [0, 7, 4], // left
-                    //     [4, 5, 6], [4, 6, 7], // top
-                    // ]
                     const newVertices = [
                         // bottom
                         [0, 0, 0], [1, 0, 0], [1, 0, 1],
