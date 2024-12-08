@@ -111,6 +111,7 @@ class Particle {
         gl.bindVertexArray( this.vertex_array_object )
         gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.index_buffer)
 
+        this.shader.setUniform3f( "u_color", this.color )
         this.shader.setUniform3f( "u_normal", vec3.fromValues(1, 0, 0) )
         this.shader.setUniform3f( "u_displacement", this.position )
         this.shader.setUniform4x4f( "u_r", this.rotation_matrix )
