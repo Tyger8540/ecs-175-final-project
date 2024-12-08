@@ -33,10 +33,6 @@
 
                     movementSpeedSlider.addEventListener("input", updateMovementSpeedSliderValue);
                     movementSpeedSlider.addEventListener("change", updateMovementSpeedSliderValue);
-                    movementSpeedSlider.addEventListener("input", (e) => {
-                        e.preventDefault(); // Prevent form-related resets
-                        movementSpeedOutput.innerHTML = movementSpeedSlider.value;
-                    });
                     </script>
             </div>
             <div class="setting">
