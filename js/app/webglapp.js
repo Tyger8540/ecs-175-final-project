@@ -88,7 +88,7 @@ class WebGlApp
         
         this.gl = gl
 
-        this.numChunks = 20
+        this.numChunks = 5
 
         this.procGen = new ProcGen()
 
@@ -111,6 +111,33 @@ class WebGlApp
 
         this.movementX = 0
         this.movementY = 0
+    }
+
+
+    generateTerrain3D() {
+        var heightSlider = document.getElementById("heightSlider")
+        let height = heightSlider.value
+        this.chunkManager = new ChunkManager(this.gl, this.shaders[4], this.numChunks, height)
+        height = height * 16
+        let width = 16 * this.numChunks
+        let depth = 16 * this.numChunks
+        let values = this.procGen.createNoiseMap3D(width, height, depth)
+
+        let value
+
+        for (let z = 0; z < depth; z++) {
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    value = values[x + y * width + z * height * width]
+                    if (y == 0) {
+                        this.chunkManager.setVoxel(x, y, z, [0, 0, 255])  // set the water voxel at y=0
+                    } else if (value < 0.5) {
+                        this.chunkManager.setVoxel(x, y, z, [Math.random(), Math.random(), Math.random()])  // set the rest of the voxels
+                    }
+                }
+            }
+        }
+        this.chunkManager.regenerateAllBuffers()
     }
 
     /**
