@@ -33,7 +33,7 @@ class Emitter {
         max_particles, period, color, size, lifetime, shader ) {
 
         this.list_particles = []
-        this.active = true
+        this.active = false
         this.timer = 0.0
 
         this.emitter_position = vec3.create()
@@ -143,7 +143,7 @@ class Emitter {
         vec3.add(spawn_position, spawn_position, this.emitter_position)
 
 
-        this.list_particles.push( new Particle(spawn_position, velocity, this.linear_acceleration, true, variant_rotation_speed, new_rotation_axis,
+        this.list_particles.push( new Particle(spawn_position, velocity, this.linear_acceleration, this.rotate_to_velocity, variant_rotation_speed, new_rotation_axis,
             this.gravity, this.color, this.size, this.lifetime, this.shader, gl))
     }
 

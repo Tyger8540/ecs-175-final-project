@@ -100,8 +100,6 @@ class WebGlApp
             0, 600, 0.002, vec3.fromValues(0.2, 0.2, 1.0), vec3.fromValues(0.05, 0.05, 1), 1, this.shaders[6]
             )
 
-        this.rain.disable()
-
         this.snow = new Emitter(vec3.fromValues(0, 20, 0), vec3.fromValues(200, 0, 200), 12, 0.8, vec3.fromValues(-0.2, -1, 0), 0.05, vec3.fromValues(0, 0, 0), 0.1, true, 0, 0, vec3.fromValues(0, 1, 0),
             0, 1600, 0.005, vec3.fromValues(0.9, 0.9, 0.9), vec3.fromValues(0.15, 0.15, 0.15), 8, this.shaders[6]
             )
@@ -110,10 +108,11 @@ class WebGlApp
         0, 0, 60, zero, zero, 1, this.shaders[6]
         )
 
+        this.smoke = new Emitter([-1, 0, -1], [1, 0, 1], 5, 0.2, [0, 1, 0], 0.5, zero, 0, false, 0, 0, zero, 0, 20, 0.2, [0.5, 0.5, 0.5, 0.2], [0.7, 0.7, 0.7], 2, this.shaders[6])
+        this.smoke.enable()
+
         this.weathers = [this.rain, this.snow, this.null_weather]
         this.weather_id = 0
-
-        this.weathers[this.weather_id].enable()
 
         this.setWeather(0)
 
@@ -553,6 +552,7 @@ class WebGlApp
 
         this.rain.update(delta_time, gl)
         this.snow.update(delta_time, gl)
+        this.smoke.update(delta_time, gl)
         //console.log(1/delta_time)
     }
 
@@ -923,6 +923,8 @@ class WebGlApp
         this.chunkManager.render(gl)
 
         this.weathers[this.weather_id].render( gl )
+
+        this.smoke.render( gl )
 
         // Render the scene
         if (this.scene) this.scene.render( gl )
