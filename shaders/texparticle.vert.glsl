@@ -3,8 +3,6 @@
 
 in vec3 a_position;
 
-uniform sampler2D map_tex;
-
 uniform vec3 u_color;
 uniform vec3 u_displacement;
 uniform vec3 u_normal;
