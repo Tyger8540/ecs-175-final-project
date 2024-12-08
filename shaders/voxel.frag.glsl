@@ -4,11 +4,15 @@
 // to pick one. mediump is a good default. It means "medium precision".
 precision mediump float;
 
+uniform float u_shading[6];
+
+flat in float o_faceId;
 in vec3 o_color;
 
 // with webgl 2, we now have to define an out that will be the color of the fragment
 out vec4 o_fragColor;
 
 void main() {
-    o_fragColor = vec4(o_color, 1);
+    vec3 color = o_color * u_shading[int(o_faceId)];
+    o_fragColor = vec4(color, 1.0);
 }
