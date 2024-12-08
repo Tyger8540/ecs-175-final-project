@@ -13,6 +13,9 @@ import { Scene, SceneNode } from './scene.js'
 import { ProcGen } from '../../procgen.js'
 import ChunkManager from '../../voxel/chunkmanager.js'
 
+import Emitter from "../../particles/emitter.js"
+
+
 /**
  * @Class
  * WebGlApp that will call basic GL functions, manage a list of shapes, and take care of rendering them
@@ -89,6 +92,21 @@ class WebGlApp
 
         this.procGen = new ProcGen()
 
+
+
+
+        var zero = vec3.create()
+        this.emitter = new Emitter(vec3.fromValues(0, 20, 0), vec3.fromValues(50, 0, 50), 200, 0.8, vec3.fromValues(-0.2, -1, 0), 0.1, vec3.fromValues(0, -20, 0), 0.5, true, 0, 0, vec3.fromValues(0, 1, 0),
+            0, 600, 0.002, vec3.fromValues(0.2, 0.2, 1.0), vec3.fromValues(0.05, 0.05, 1), 1, this.shaders[6]
+            )
+
+
+
+
+
+        let width = 16
+        let height = 16
+        let values = this.procGen.createNoiseMap(width, height)
         this.generateTerrain()
 
         this.movementX = 0
@@ -443,6 +461,9 @@ class WebGlApp
                 this.updateSceneNode( scene_node, delta_time )
                 break
         }
+
+        this.emitter.update(delta_time, gl)
+        //console.log(1/delta_time)
     }
 
     /**
@@ -530,6 +551,7 @@ class WebGlApp
             view_dirty = true
         }
 
+        /*
         // Control - FPS-style Camera Rotation
         if (this.movementX != 0 || this.movementY != 0) {
             // Rotate around xz plane around y
@@ -546,6 +568,7 @@ class WebGlApp
             // Set dirty flag to trigger view matrix updates
             view_dirty = true
         }
+        */
 
         // Control - Move Forward with W
         if (Input.isKeyDown('w')) {
@@ -634,6 +657,7 @@ class WebGlApp
             this.updateViewSpaceVectors()
 
             this.view = mat4.lookAt(mat4.create(), this.eye, this.center, this.up)
+            this.emitter.update_position(this.eye)
 
             for (let shader of this.shaders) {
                 shader.use()
@@ -642,6 +666,7 @@ class WebGlApp
                 shader.unuse()
             }
         }
+
     }
 
     /**
@@ -752,6 +777,8 @@ class WebGlApp
 
         // render chunk manager
         this.chunkManager.render(gl)
+
+        this.emitter.render( gl )
 
         // Render the scene
         if (this.scene) this.scene.render( gl )

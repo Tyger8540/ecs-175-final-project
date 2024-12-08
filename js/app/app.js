@@ -26,7 +26,8 @@ class App
             new Shader( this.gl, '../../assignment3.textured.vert.glsl', '../../assignment3.textured.frag.glsl' ),
             new Shader( this.gl, '../../shaders/lights.vert.glsl', '../../shaders/lights.frag.glsl' ),
             new Shader(this.gl, '../../shaders/voxel.vert.glsl', '../../shaders/voxel.frag.glsl'),
-            new Shader(this.gl, '../../shaders/water.vert.glsl', '../../shaders/water.frag.glsl')
+            new Shader(this.gl, '../../shaders/water.vert.glsl', '../../shaders/water.frag.glsl'),
+            new Shader(this.gl, "../../shaders/texparticle.vert.glsl", "../../shaders/texparticle.frag.glsl")
         ]
 
         // resize handling
