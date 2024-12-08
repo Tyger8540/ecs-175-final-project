@@ -1,7 +1,7 @@
 'use strict'
 
 import { hex2rgb, deg2rad, loadExternalFile } from '../utils/utils.js'
-// import Box from './box3d.js'
+import Box from './box3d.js'
 import Plane from './plane3d.js'
 import Input from '../input/input.js'
 import * as mat4 from '../lib/glmatrix/mat4.js'
@@ -38,13 +38,15 @@ class WebGlApp
 
         // Store the shader(s)
         this.shaders = shaders // Collection of all shaders
-        // this.box_shader = this.shaders[0]
+        this.box_shader = this.shaders[7]
+        console.log(this.shaders[7])
         this.plane_shader = this.shaders[5]
         this.light_shader = this.shaders[this.shaders.length - 1]
         this.active_shader = 1
         
         // Create a box instance and create a variable to track its rotation
-        // this.box = new Box( gl, this.box_shader )
+        this.box = new Box( gl, this.box_shader )
+
         this.plane = new Plane( gl, this.plane_shader )
         this.animation_step = 0
 
@@ -892,7 +894,7 @@ class WebGlApp
 
         // Render the box
         // This will use the MVP that was passed to the shader
-        // this.box.render( gl )
+        this.box.render( gl )
         // this.plane.render( gl )
 
         // render chunk manager

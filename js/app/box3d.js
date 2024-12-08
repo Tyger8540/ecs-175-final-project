@@ -43,7 +43,7 @@ class Box extends Object3D {
             6, 4
         ]
         
-        super( gl, shader, vertices, indices, gl.LINES )
+        super( gl, shader, vertices, indices, gl.TRIANGLES )
     }
 
     /**
