@@ -12,14 +12,14 @@ class Box extends Object3D {
     constructor( gl, shader, box_scale = [1,1,1] ) 
     {
         let vertices = [
-            1.000000, 1.000000, -1.000000,
-            1.000000, -1.000000, -1.000000,
-            1.000000, 1.000000, 1.000000,
-            1.000000, -1.000000, 1.000000,
-            -1.000000, 1.000000, -1.000000,
-            -1.000000, -1.000000, -1.000000,
-            -1.000000, 1.000000, 1.000000,
-            -1.000000, -1.000000, 1.000000
+            1.0, 1.0, 1.0,
+            1.0, -1.0, 1.0,
+            1.0, -1.0, -1.0,
+            1.0, 1.0, -1.0,
+            -1.0, 1.0, 1.0,
+            -1.0, -1.0, 1.0,
+            -1.0, -1.0, -1.0,
+            -1.0, 1.0, -1.0
         ]
 
         for (let i = 0; i < vertices.length; i++) {
@@ -27,22 +27,14 @@ class Box extends Object3D {
         }
 
         let indices = [
-            0, 1,
-            1, 3,
-            3, 2,
-            2, 0,
-
-            0, 4,
-            1, 5,
-            2, 6,
-            3, 7,
-
-            4, 5,
-            5, 7,
-            7, 6,
-            6, 4
+            0, 1, 2, 0, 2, 3, // bottom
+            0, 1, 5, 0, 5, 4, // front
+            1, 2, 6, 1, 6, 5, // right
+            3, 2, 6, 3, 6, 7, // back
+            0, 3, 7, 0, 7, 4, // left
+            4, 5, 6, 4, 6, 7, // top
         ]
-        
+
         super( gl, shader, vertices, indices, gl.TRIANGLES )
     }
 
@@ -55,6 +47,13 @@ class Box extends Object3D {
     {
         return
     }
+
+
+    update_position(position) {
+        this.shader.use( )
+        this.shader.setUniform3f("u_displacement", position)
+        this.shader.unuse( )
+    }
 }
 
-export default Box
+export default Box  

@@ -39,7 +39,6 @@ class WebGlApp
         // Store the shader(s)
         this.shaders = shaders // Collection of all shaders
         this.box_shader = this.shaders[7]
-        console.log(this.shaders[7])
         this.plane_shader = this.shaders[5]
         this.light_shader = this.shaders[this.shaders.length - 1]
         this.active_shader = 1
@@ -780,6 +779,7 @@ class WebGlApp
 
             this.view = mat4.lookAt(mat4.create(), this.eye, this.center, this.up)
             this.emitter.update_position(this.eye)
+            this.box.update_position(this.eye)
 
             for (let shader of this.shaders) {
                 shader.use()

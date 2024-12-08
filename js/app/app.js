@@ -27,8 +27,10 @@ class App
             new Shader( this.gl, '../../shaders/lights.vert.glsl', '../../shaders/lights.frag.glsl' ),
             new Shader(this.gl, '../../shaders/voxel.vert.glsl', '../../shaders/voxel.frag.glsl'),
             new Shader(this.gl, '../../shaders/water.vert.glsl', '../../shaders/water.frag.glsl'),
-            new Shader(this.gl, "../../shaders/texparticle.vert.glsl", "../../shaders/texparticle.frag.glsl")
+            new Shader(this.gl, "../../shaders/texparticle.vert.glsl", "../../shaders/texparticle.frag.glsl"),
+            new Shader(this.gl, "../../shaders/skybox.vert.glsl", "../../shaders/skybox.frag.glsl")
         ]
+
 
         // resize handling
         this.resizeToDisplay( )
