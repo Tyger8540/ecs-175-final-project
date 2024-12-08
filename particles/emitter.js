@@ -8,7 +8,7 @@ import * as mat4 from "../js/lib/glmatrix/mat4.js"
 class Emitter {
     /**
      * Emitter that creates particles.
-     * @param {vec3} position Center point of particle spawn area.
+     * @param {vec3} offset Center point of particle spawn area.
      * @param {vec3} spawn_radius Defines a vec3 rectangular volume of possible spawns.
      * @param {float} speed Initial speed of the particle.
      * @param {float} speed_variance Minimum variance of speed. Defined from 0 to 1.
@@ -28,14 +28,16 @@ class Emitter {
      * @param {float} lifetime The time that the particle will exist in the world.
      * @param {Shader} shader The shaders that the particle will use.
      */
-    constructor( position, spawn_radius, speed, speed_variance, initial_direction, velocity_spread, linear_acceleration, gravity,
+    constructor( offset, spawn_radius, speed, speed_variance, initial_direction, velocity_spread, linear_acceleration, gravity,
         rotate_to_velocity, rotation_speed, rotation_speed_variance, rotation_axis, rotation_spread, 
         max_particles, period, color, size, lifetime, shader ) {
 
         this.list_particles = []
+        this.active = true
         this.timer = 0.0
 
-        this.position = vec3.clone(position)
+        this.emitter_position = vec3.create()
+        this.offset = vec3.clone(offset)
         this.spawn_radius = vec3.clone(spawn_radius)
         this.speed = speed
         this.initial_direction = vec3.normalize(vec3.create(), initial_direction)
@@ -64,7 +66,7 @@ class Emitter {
 
     update ( delta, gl ) {
         //console.log("asdfasdfasdf")
-        if ( this.list_particles.length < this.max_particles ){
+        if ( this.list_particles.length < this.max_particles && this.active ){
             this.timer += delta
             while ( this.timer >= this.period ) {
                 this.timer -= this.period
@@ -131,13 +133,14 @@ class Emitter {
         
 
 
-        let offset_position = []
+        let rand_box_position = []
         for (let component of this.spawn_radius) {
-            offset_position.push(this.generate_random_range(-component/2, component/2))
+            rand_box_position.push(this.generate_random_range(-component/2, component/2))
         }
 
-        let spawn_position = vec3.fromValues(offset_position[0], offset_position[1], offset_position[2])
-        vec3.add(spawn_position, spawn_position, this.position)
+        let spawn_position = vec3.fromValues(rand_box_position[0], rand_box_position[1], rand_box_position[2])
+        vec3.add(spawn_position, spawn_position, this.offset)
+        vec3.add(spawn_position, spawn_position, this.emitter_position)
 
 
         this.list_particles.push( new Particle(spawn_position, velocity, this.linear_acceleration, true, variant_rotation_speed, new_rotation_axis,
@@ -149,6 +152,24 @@ class Emitter {
         return (max - min) * Math.random() + min
     }
         
+
+    /**
+     * 
+     * @param {vec3} posiion 
+     */
+    update_position(posiion) {
+        this.emitter_position = posiion
+    }
+
+
+    disable() {
+        this.active = false
+    }
+
+    
+    enable() {
+        this.active = true
+    }
 }
 
 export default Emitter
