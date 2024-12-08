@@ -156,38 +156,84 @@ class WebGlApp
                 }
                 else if (value <= 0.85) {
                     // stone
-                    r = 169;
-                    g = 183;
-                    b = 199;
+                    r = 122;
+                    g = 122;
+                    b = 122;
+                    // r = 169;
+                    // g = 183;
+                    // b = 199;
                 }
                 else if (value <= verySmallPeakValue) {
                     // snow
-                    r = 255;
-                    g = 255;
-                    b = 255;
+                    if (height == 1) {
+                        r = 255;
+                        g = 255;
+                        b = 255;
+                    } else {
+                        r = 155;
+                        g = 155;
+                        b = 155;
+                    }
+                   
                 }
                 else if (value <= smallPeakValue) {
-                    r = 255;
-                    g = 255;
-                    b = 255;
+                    if (height == 1) {
+                        r = 255;
+                        g = 255;
+                        b = 255;
+                    } else {
+                        r = 188;
+                        g = 188;
+                        b = 188;
+                    }
+                    // r = 255;
+                    // g = 255;
+                    // b = 0;
                     isVerySmallPeak = true;
                 }
                 else if (value <= mediumPeakValue) {
-                    r = 255;
-                    g = 255;
-                    b = 255;
+                    if (height == 1) {
+                        r = 255;
+                        g = 255;
+                        b = 255;
+                    } else {
+                        r = 222;
+                        g = 222;
+                        b = 222;
+                    }
+                    // r = 255;
+                    // g = 122;
+                    // b = 0;
                     isSmallPeak = true;
                 }
                 else if (value <= largePeakValue) {
-                    r = 255;
-                    g = 255;
-                    b = 255;
+                    if (height == 1) {
+                        r = 255;
+                        g = 255;
+                        b = 255;
+                    } else {
+                        r = 238;
+                        g = 238;
+                        b = 238;
+                    }
+                    // r = 255;
+                    // g = 0;
+                    // b = 0;
                     isMediumPeak = true;
                 }
                 else {
-                    r = 255;
-                    g = 255;
-                    b = 255;
+                    if (height == 1) {
+                        r = 255;
+                        g = 255;
+                        b = 255;
+                    } else {
+                        r = 255;
+                        g = 255;
+                        b = 255;
+                    }
+                    // r = 255;
+                    // g = 0;
+                    // b = 255;
                     isLargePeak = true;
                 }
 
