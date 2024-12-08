@@ -2,8 +2,8 @@
 
 precision mediump float;
 
-const float gradient_center = 0.5;
-const float gradient_range = 0.4;
+const float gradient_center = 0.4;
+const float gradient_range = 0.5;
 
 in vec3 o_color;
 in vec3 o_vertexPosition;
@@ -19,8 +19,8 @@ void main() {
         gradient_strength = 0.0;
     }
     
-    vec3 pixel_color = vec3(0.2, 0.1, 0.6) * (1.0 - gradient_strength);
-    pixel_color += vec3(0.3, 0.6, 1.0) * gradient_strength;
+    vec3 pixel_color = vec3(0.35f, 0.35f, 0.73f) * (1.0 - gradient_strength);
+    pixel_color += vec3(0.41f, 0.71f, 1.0f) * gradient_strength;
     o_fragColor = vec4(pixel_color, 1.0);
 
     
