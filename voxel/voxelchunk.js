@@ -10,8 +10,8 @@ class VoxelChunk {
         this.gl = gl
         this.shader = shader
         this.vertices_buffer = gl.createBuffer();
-        this.index_buffer = gl.createBuffer();
         this.vertex_array_object = gl.createVertexArray();
+        this.FACE_ELEMENT_COUNT = 4 * 3 + 1 // TODO: change this
 
         // voxel
         this.voxels = Array(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE).fill(null)
@@ -32,11 +32,8 @@ class VoxelChunk {
     }
 
     regenerateBuffers(gl, shader) {
-        const VERTEX_ELEMENT_COUNT = 2 * 3 + 1
-
         // create vertex and index arrays
         this.vertices = []
-        this.indices = []
         for (let z = 0; z < CHUNK_SIZE; z++) {
             for (let y = 0; y < CHUNK_SIZE; y++) {
                 for (let x = 0; x < CHUNK_SIZE; x++) {
@@ -47,37 +44,39 @@ class VoxelChunk {
                     }
 
                     // instantiate a cube relative to coords
-                    const newVertices = [[0, 0, 0], [1, 0, 0], [1, 0, 1], [0, 0, 1], [0, 1, 0], [1, 1, 0], [1, 1, 1], [0, 1, 1]]
-                    const newIndices = [
-                        [0, 1, 2], [0, 2, 3], // bottom
-                        [0, 1, 5], [0, 5, 4], // front
-                        [1, 2, 6], [1, 6, 5], // right
-                        [3, 2, 6], [3, 6, 7], // back
-                        [0, 3, 7], [0, 7, 4], // left
-                        [4, 5, 6], [4, 6, 7], // top
+                    // const newVertices = [[0, 0, 0], [1, 0, 0], [1, 0, 1], [0, 0, 1], [0, 1, 0], [1, 1, 0], [1, 1, 1], [0, 1, 1]]
+                    // const newIndices = [
+                    //     [0, 1, 2], [0, 2, 3], // bottom
+                    //     [0, 1, 5], [0, 5, 4], // front
+                    //     [1, 2, 6], [1, 6, 5], // right
+                    //     [3, 2, 6], [3, 6, 7], // back
+                    //     [0, 3, 7], [0, 7, 4], // left
+                    //     [4, 5, 6], [4, 6, 7], // top
+                    // ]
+                    const newVertices = [
+                        // bottom
+                        [0, 0, 0], [1, 0, 0], [1, 0, 1], 0,
+                        [0, 0, 0], [1, 0, 1], [0, 0, 1], 0,
+                        // front
+                        [0, 0, 0], [1, 0, 0], [1, 1, 0], 1,
+                        [0, 0, 0], [1, 1, 0], [0, 1, 0], 1,
                     ]
 
-                    // push newIndices flattened, relative to indexOffset
-                    const indexOffset = this.vertices.length / VERTEX_ELEMENT_COUNT
-                    newIndices.forEach(arr => {
-                        const toPush = [arr[0] + indexOffset, arr[1] + indexOffset, arr[2] + indexOffset]
-                        this.indices.push(...toPush)
-                    })
-
                     // push newVertices flattened, relative to (x, y, z)
+                      // TODO: redo w/ new nerVertices
                     for (let i in newVertices) {
-                        const arr = newVertices[i]
+                        const element = newVertices[i]
 
-                        // push position
-                        const positionPush = [arr[0] + x, arr[1] + y, arr[2] + z]
-                        this.vertices.push(...positionPush)
-
-                        // push faceId
-                        this.vertices.push(i) // TODO: this should not be i. not sure how to determine faceId by a vertex basis
-
-                        // push color
-                        this.vertices.push(...color)
+                        if (i % 4 !== 3) {
+                            // push position
+                            this.vertices.push(...[element[0] + x, element[1] + y, element[2] + z])
+                        } else {
+                            // push faceId and color
+                            this.vertices.push(element)
+                            this.vertices.push(...color)
+                        }
                     }
+                    //console.log(this.vertices.length % this.FACE_ELEMENT_COUNT)
                 }
             }
         }
@@ -87,11 +86,6 @@ class VoxelChunk {
         gl.bufferData( gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW )
         gl.bindBuffer( gl.ARRAY_BUFFER, null );
 
-        // Creates index buffer object for vertex data
-        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.index_buffer )
-        gl.bufferData( gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.indices), gl.STATIC_DRAW )
-        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, null )
-
         // Sets up a vertex attribute object that is used during rendering to automatically tell WebGL how to access our buffers
         gl.bindVertexArray(this.vertex_array_object);
         gl.bindBuffer( gl.ARRAY_BUFFER, this.vertices_buffer )
@@ -99,23 +93,25 @@ class VoxelChunk {
         let a_position = shader.getAttributeLocation( 'a_position' )
         if (a_position >= 0) {
             gl.enableVertexAttribArray(a_position)
-            gl.vertexAttribPointer(a_position, 3, gl.FLOAT, false, 4 * VERTEX_ELEMENT_COUNT, 0)
+            gl.vertexAttribPointer(a_position, 3, gl.FLOAT, false, 4 * this.FACE_ELEMENT_COUNT, 0)
         }
 
         let a_faceId = shader.getAttributeLocation( 'a_faceId' )
         if (a_faceId >= 0) {
             gl.enableVertexAttribArray(a_faceId)
-            gl.vertexAttribPointer(a_faceId, 1, gl.FLOAT, false, 4 * VERTEX_ELEMENT_COUNT, 4 * 3)
+            gl.vertexAttribPointer(a_faceId, 1, gl.FLOAT, false, 4 * this.FACE_ELEMENT_COUNT, 4 * 3*3)
         }
 
         let a_color = shader.getAttributeLocation( 'a_color' )
         if (a_color >= 0) {
             gl.enableVertexAttribArray(a_color)
-            gl.vertexAttribPointer(a_color, 3, gl.FLOAT, false, 4 * VERTEX_ELEMENT_COUNT, 4 * 4)
+            gl.vertexAttribPointer(a_color, 3, gl.FLOAT, false, 4 * this.FACE_ELEMENT_COUNT, 4 * 3*4)
         }
 
         gl.bindVertexArray( null )
         gl.bindBuffer( gl.ARRAY_BUFFER, null )
+
+        console.log(this.vertices)
     }
 
     render(gl, xPos, yPos, zPos, shading)
@@ -123,12 +119,9 @@ class VoxelChunk {
         // Bind vertex array object
         gl.bindVertexArray( this.vertex_array_object )
 
-        // Bind index buffer
-        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.index_buffer )
-
         // set up model matrix
         const model_matrix = mat4.identity(mat4.create())
-        mat4.translate(model_matrix, model_matrix, [xPos, 0, zPos])
+        mat4.translate(model_matrix, model_matrix, [xPos, yPos, zPos])
 
         // Set up shader
         this.shader.use( )
@@ -136,12 +129,11 @@ class VoxelChunk {
         this.gl.uniform1fv(this.shader.getUniformLocation('u_shading'), shading)
 
         // Draw the element
-        gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_INT, 0 )
+        gl.drawArrays(gl.TRIANGLES, 0, this.vertices.length / this.FACE_ELEMENT_COUNT)
 
         // Clean Up
         gl.bindVertexArray( null )
         gl.bindBuffer( gl.ARRAY_BUFFER, null )
-        gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, null )
         this.shader.unuse( )
     }
 
