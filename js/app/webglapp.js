@@ -13,7 +13,7 @@ import { Scene, SceneNode } from './scene.js'
 import { ProcGen } from '../../procgen.js'
 import ChunkManager from '../../voxel/chunkmanager.js'
 
-import Emitter from "../../particles/emitter.js"
+import { Emitter, OneShotEmitter } from "../../particles/emitter.js"
 import { Light, AmbientLight, DirectionalLight, PointLight } from "./light.js"
 import raycast from '../../voxel/raycast.js'
 
@@ -101,7 +101,7 @@ class WebGlApp
 
         this.procGen = new ProcGen()
 
-
+        this.oneshotEmitters = [ ]
 
         var zero = vec3.create()
         this.rain = new Emitter(vec3.fromValues(0, 20, 0), vec3.fromValues(50, 0, 50), 200, 0.1, vec3.fromValues(-0.2, -1, 0), 0.1, vec3.fromValues(0, -20, 0), 0.5, true, 0, 0, vec3.fromValues(0, 1, 0),
@@ -115,9 +115,6 @@ class WebGlApp
         this.null_weather = new Emitter(zero, zero, 0, 0, zero, 0, 0, 0.0, true, 0, 0, zero,
         0, 0, 60, zero, zero, 1, this.shaders[6]
         )
-
-        this.smoke = new Emitter([-1, 0, -1], [2, 1, 2], 3, 0.2, [0, 1, 0], 0.2, zero, 0.1, false, 2, 0.5, [1, 0, 0], 1.5, 120, 0.2, [0.5, 0.5, 0.5], [0.4, 0.4, 0.4], 16, this.shaders[6])
-        this.smoke.enable()
 
         this.campfireEmitters = []
 
@@ -743,7 +740,14 @@ class WebGlApp
 
         this.rain.update(delta_time, gl)
         this.snow.update(delta_time, gl)
-        this.smoke.update(delta_time, gl)
+
+
+        for (let i = 0; i < this.oneshotEmitters.length; i++) {
+            this.oneshotEmitters[i].update( delta_time, gl )
+            if (this.oneshotEmitters[i].isDone()) {
+                this.oneshotEmitters.splice(i, 1)
+            }
+        }
 
         for (let i = 0; i < this.campfireEmitters.length; i++) {
             this.campfireEmitters[i].update(delta_time, gl)
@@ -1018,8 +1022,15 @@ class WebGlApp
         if (Input.isKeyDown('f')) {
             const pos = raycast(this.chunkManager, this.eye, this.forward, 10000)
             if (pos != null) {
-                this.chunkManager.setVoxel(pos[0], pos[1], pos[2], null)
-                // TODO: smoke particles
+                if (this.chunkManager.setVoxel(pos[0], pos[1], pos[2], null)) {
+                    // Destruction smoke
+                    this.oneshotEmitters.push(new OneShotEmitter(pos, [0.3, 0.3, 0.3], 5, 0.5, [0, 1, 0], Math.PI, [0, 0, 0], 2, true, 0, 0, [0, 0, 0], 0, 20, 20, 0.005, [1, 1, 1],
+                        [0.3, 0.3, 0.3], 0.3, this.shaders[6]
+                        ))
+                    this.oneshotEmitters[this.oneshotEmitters.length - 1].enable()
+                    //console.log(this.oneshotEmitters)
+                }
+
                 this.chunkManager.chunks[this.chunkManager.getChunkIndex(pos[0], pos[1], pos[2])].regenerateBuffers(this.gl, this.chunkManager.shader)
             }
         }
@@ -1155,8 +1166,6 @@ class WebGlApp
 
         this.weathers[this.weather_id].render( gl )
 
-        this.smoke.render( gl )
-
         for (let i = 0; i < this.campfireEmitters.length; i++) {
             this.campfireEmitters[i].render( gl )
         }
@@ -1168,6 +1177,9 @@ class WebGlApp
             i.render( gl )
         }
 
+        for (let i of this.oneshotEmitters) {
+            i.render( gl )
+        }
     }
 
 }

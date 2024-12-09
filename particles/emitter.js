@@ -172,4 +172,54 @@ class Emitter {
     }
 }
 
-export default Emitter
+class OneShotEmitter extends Emitter {
+    constructor( offset, spawn_radius, speed, speed_variance, initial_direction, velocity_spread, linear_acceleration, gravity,
+        rotate_to_velocity, rotation_speed, rotation_speed_variance, rotation_axis, rotation_spread, 
+        max_particles, num_particles, period, color, size, lifetime, shader ) {
+
+        super( offset, spawn_radius, speed, speed_variance, initial_direction, velocity_spread, linear_acceleration, gravity,
+                rotate_to_velocity, rotation_speed, rotation_speed_variance, rotation_axis, rotation_spread, 
+                max_particles, period, color, size, lifetime, shader )
+            
+        this.num_particles = num_particles
+
+    }
+    
+    update ( delta, gl ) {
+        if ( this.list_particles.length < this.max_particles && this.active && this.num_particles > 0){
+            this.timer += Math.min(delta, 0.1)
+            while ( this.timer >= this.period ) {
+                this.timer -= this.period
+                this.instantiate_particle( gl )
+                this.num_particles -= 1
+            }
+        }
+
+        for ( let i = 0; i < this.list_particles.length; i++ ) {
+            this.list_particles[i].update( delta )
+            if (this.list_particles[i].isDead()) {
+                this.list_particles.splice(i, 1)
+            }
+        }
+    }
+    
+    isDone() {
+        if ( this.num_particles <= 0 && this.list_particles.length <= 0 && this.timer > 0 ) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    enable() {
+        this.active = true
+        this.timer = this.period
+    }
+
+}
+
+export {
+    Emitter,
+    OneShotEmitter
+}
+

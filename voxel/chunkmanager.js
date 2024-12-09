@@ -32,8 +32,12 @@ class ChunkManager {
         const localY = globalY % CHUNK_SIZE
         const localZ = globalZ % CHUNK_SIZE
         const chunk = this.chunks[this.getChunkIndex(globalX, globalY, globalZ)]
-        if (chunk != null)
+        if (chunk != null) {
             chunk.setVoxel(localX, localY, localZ, color)
+            return true
+        } else {
+            return false
+        }
     }
 
     getVoxel(globalX, globalY, globalZ, color) {
