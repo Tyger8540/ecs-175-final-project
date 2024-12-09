@@ -14,6 +14,7 @@ import { ProcGen } from '../../procgen.js'
 import ChunkManager from '../../voxel/chunkmanager.js'
 
 import Emitter from "../../particles/emitter.js"
+import { Light, AmbientLight, DirectionalLight, PointLight } from "./light.js"
 
 
 /**
@@ -40,7 +41,7 @@ class WebGlApp
         this.shaders = shaders // Collection of all shaders
         this.box_shader = this.shaders[7]
         this.plane_shader = this.shaders[5]
-        this.light_shader = this.shaders[this.shaders.length - 1]
+        this.light_shader = this.shaders[3]
         this.active_shader = 1
         
         // Create a box instance and create a variable to track its rotation
@@ -48,6 +49,11 @@ class WebGlApp
 
         this.plane = new Plane( gl, this.plane_shader )
         this.animation_step = 0
+
+        this.lights = []
+        this.lights.push(new AmbientLight(0, [0.6, 0.9, 1.0], 0.4, this.shaders[4], gl, this.light_shader))
+        this.lights.push(new DirectionalLight(0, [1.0, 1.0, 0.7], 1, this.shaders[4], gl, this.light_shader))
+        //console.log(this.lights)
 
         // Declare a variable to hold a Scene
         // Scene files can be loaded through the UI (see below)
@@ -554,6 +560,10 @@ class WebGlApp
         this.rain.update(delta_time, gl)
         this.snow.update(delta_time, gl)
         this.smoke.update(delta_time, gl)
+
+        for (let i of this.lights) {
+            i.update()
+        }
         //console.log(1/delta_time)
     }
 
@@ -929,6 +939,10 @@ class WebGlApp
 
         // Render the scene
         if (this.scene) this.scene.render( gl )
+
+        for (let i of this.lights) {
+            i.render( gl )
+        }
 
     }
 

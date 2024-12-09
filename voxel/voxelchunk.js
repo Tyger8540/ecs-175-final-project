@@ -157,7 +157,7 @@ class VoxelChunk {
         this.gl.uniform1fv(this.shader.getUniformLocation('u_shading'), shading)
 
         // Draw the element
-        gl.drawArrays(gl.LINES, 0, this.vertices.length / this.FACE_ELEMENT_COUNT)
+        gl.drawArrays(gl.TRIANGLES, 0, this.vertices.length / this.FACE_ELEMENT_COUNT)
 
         // Clean Up
         gl.bindVertexArray( null )

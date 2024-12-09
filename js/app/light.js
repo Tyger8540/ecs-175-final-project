@@ -130,7 +130,7 @@ class DirectionalLight extends Light {
      */
     update( ) {
         let transform = mat4.getRotation(mat4.create(), this.model_matrix)
-        let direction = vec3.transformQuat(vec3.create(), [0.0,-1.0,0.0], transform)
+        let direction = vec3.transformQuat(vec3.create(), [-0.3,-1.0,0.2], transform)
 
         this.target_shader.use()
         this.target_shader.setUniform3f(`u_lights_directional[${this.id}].direction`, direction)
