@@ -119,15 +119,21 @@ class WebGlApp
         this.smoke = new Emitter([-1, 0, -1], [2, 1, 2], 3, 0.2, [0, 1, 0], 0.2, zero, 0.1, false, 2, 0.5, [1, 0, 0], 1.5, 120, 0.2, [0.5, 0.5, 0.5], [0.4, 0.4, 0.4], 16, this.shaders[6])
         this.smoke.enable()
 
+        this.campfireEmitters = []
+
         this.weathers = [this.rain, this.snow, this.null_weather]
-        var weatherSliderSlider = document.getElementById("weatherSlider")
+        var weatherSlider = document.getElementById("weatherSlider")
         this.weather_id = weatherSlider.value
 
-        if (this.weather_id == 0) {
-            this.setWeather(2)
-        } else {
-            this.setWeather(0)
-        }
+        this.setWeather(2)
+
+        // if (this.weather_id == 0) {
+        //     this.setWeather(2)
+        // } else if (this.weather_id == 1) {
+        //     this.setWeather(0)
+        // } else {
+        //     this.setWeather(1)
+        // }
 
         this.generateTerrain()
 
@@ -179,6 +185,7 @@ class WebGlApp
         let width = 16 * this.numChunks
         let depth = 16 * this.numChunks
         let values = this.procGen.createNoiseMap(width, depth)
+        let campfireValues = this.procGen.createNoiseMapCampfires(width, depth)
         let treeValues = this.procGen.createNoiseMapTrees(width, depth)
 
         let value
@@ -187,6 +194,8 @@ class WebGlApp
         let isSmallPeak = false;
         let isMediumPeak = false;
         let isLargePeak = false;
+
+        this.campfireEmitters = [];
         for (let z = 0; z < depth; z++) {
             for (let x = 0; x < width; x++) {
                 this.chunkManager.setVoxel(x, 0, z, [0, 0, 255])  // set the water voxel at y=0
@@ -389,8 +398,32 @@ class WebGlApp
                 surfaceColor = [r/255, g/255, b/255]
 
                 if (x + 1 < width && z + 1 < depth && x - 1 >= 0 && z - 1 >= 0) {
+                    let campfireValue = campfireValues[x + z * width]
                     let treeValue = treeValues[x + z * width]
-                    if (treeValue > treeValues[x + z * width + 1] &&
+
+                    if (campfireValue > campfireValues[x + z * width + 1] &&
+                        campfireValue > campfireValues[x + z * width - 1] &&
+                        campfireValue > campfireValues[x + (z + 1) * width] &&
+                        campfireValue > campfireValues[x + (z + 1) * width - 1] &&
+                        campfireValue > campfireValues[x + (z + 1) * width + 1] &&
+                        campfireValue > campfireValues[x + (z - 1) * width] &&
+                        campfireValue > campfireValues[x + (z - 1) * width - 1] && 
+                        campfireValue > campfireValues[x + (z - 1) * width + 1]) {
+
+                        // Make campfire if on grass or stone
+                        let grassColor = [0/255, 255/255, 0/255]
+                        let stoneColor = [122/255, 122/255, 122/255]
+                        if (this.colorsEqual(surfaceColor, grassColor)) {
+                            // only build campfire half of the time on grass
+                            if (Math.random() > 0.5) {
+                                let buildHeight = height * 16 - 1
+                                this.createCampfire(x, z, surfaceY, buildHeight)
+                            }
+                        } else if (this.colorsEqual(surfaceColor, stoneColor)) {
+                            let buildHeight = height * 16 - 1
+                            this.createCampfire(x, z, surfaceY, buildHeight)
+                        }
+                    } else if (treeValue > treeValues[x + z * width + 1] &&
                         treeValue > treeValues[x + z * width - 1] &&
                         treeValue > treeValues[x + (z + 1) * width] &&
                         treeValue > treeValues[x + (z - 1) * width]) {
@@ -403,6 +436,22 @@ class WebGlApp
                         }
                     }
                 }
+
+                // if (x + 1 < width && z + 1 < depth && x - 1 >= 0 && z - 1 >= 0) {
+                //     let treeValue = treeValues[x + z * width]
+                //     if (treeValue > treeValues[x + z * width + 1] &&
+                //         treeValue > treeValues[x + z * width - 1] &&
+                //         treeValue > treeValues[x + (z + 1) * width] &&
+                //         treeValue > treeValues[x + (z - 1) * width]) {
+
+                //         // Make tree if on grass
+                //         let grassColor = [0/255, 255/255, 0/255]
+                //         if (this.colorsEqual(surfaceColor, grassColor)) {
+                //             let buildHeight = height * 16 - 1
+                //             this.createTree(x, z, surfaceY, buildHeight)
+                //         }
+                //     }
+                // }
 
 
                 // EVERYTHING FITS IN THE 2 CHUNK HEIGHT
@@ -417,22 +466,153 @@ class WebGlApp
     createTree(x, z, surfaceY, buildHeight) {
         let brown = [110/255, 63/255, 44/255]
         let green = [44/255, 110/255, 48/255]
-        if (surfaceY + 4 <= buildHeight) {
-            // Wood
-            this.chunkManager.setVoxel(x, surfaceY + 1, z, brown)
-            this.chunkManager.setVoxel(x, surfaceY + 2, z, brown)
-            this.chunkManager.setVoxel(x, surfaceY + 3, z, brown)
 
-            // Leaves
-            this.chunkManager.setVoxel(x, surfaceY + 4, z, green)
-            this.chunkManager.setVoxel(x + 1, surfaceY + 2, z, green)
-            this.chunkManager.setVoxel(x + 1, surfaceY + 3, z, green)
-            this.chunkManager.setVoxel(x, surfaceY + 2, z + 1, green)
-            this.chunkManager.setVoxel(x, surfaceY + 3, z + 1, green)
-            this.chunkManager.setVoxel(x - 1, surfaceY + 2, z, green)
-            this.chunkManager.setVoxel(x - 1, surfaceY + 3, z, green)
-            this.chunkManager.setVoxel(x, surfaceY + 2, z - 1, green)
-            this.chunkManager.setVoxel(x, surfaceY + 3, z - 1, green)
+        //let fireColors = [[112/255, 76/255, 29/255], [222/255, 209/255, 33/255], [222/255, 58/255, 33/255]]
+        if (surfaceY + 6 <= buildHeight) {
+            let rand = Math.round(Math.random())
+
+            if (rand == 0) {
+                // SMALL TREE
+
+                // Wood
+                this.chunkManager.setVoxel(x, surfaceY + 1, z, brown)
+                this.chunkManager.setVoxel(x, surfaceY + 2, z, brown)
+                this.chunkManager.setVoxel(x, surfaceY + 3, z, brown)
+    
+                // Leaves
+                this.chunkManager.setVoxel(x, surfaceY + 4, z, green)
+                this.chunkManager.setVoxel(x + 1, surfaceY + 2, z, green)
+                this.chunkManager.setVoxel(x + 1, surfaceY + 3, z, green)
+                this.chunkManager.setVoxel(x, surfaceY + 2, z + 1, green)
+                this.chunkManager.setVoxel(x, surfaceY + 3, z + 1, green)
+                this.chunkManager.setVoxel(x - 1, surfaceY + 2, z, green)
+                this.chunkManager.setVoxel(x - 1, surfaceY + 3, z, green)
+                this.chunkManager.setVoxel(x, surfaceY + 2, z - 1, green)
+                this.chunkManager.setVoxel(x, surfaceY + 3, z - 1, green)
+            } else {
+                // MEDIUM TREE
+
+                // Wood
+                this.chunkManager.setVoxel(x, surfaceY + 1, z, brown)
+                this.chunkManager.setVoxel(x, surfaceY + 2, z, brown)
+                this.chunkManager.setVoxel(x, surfaceY + 3, z, brown)
+                this.chunkManager.setVoxel(x, surfaceY + 5, z, brown)
+                this.chunkManager.setVoxel(x, surfaceY + 6, z, brown)
+
+                // Leaves
+                this.chunkManager.setVoxel(x, surfaceY + 6, z, green)
+                this.chunkManager.setVoxel(x + 1, surfaceY + 3, z, green)
+                this.chunkManager.setVoxel(x + 1, surfaceY + 4, z, green)
+                this.chunkManager.setVoxel(x + 1, surfaceY + 5, z, green)
+                this.chunkManager.setVoxel(x, surfaceY + 3, z + 1, green)
+                this.chunkManager.setVoxel(x, surfaceY + 4, z + 1, green)
+                this.chunkManager.setVoxel(x, surfaceY + 5, z + 1, green)
+                this.chunkManager.setVoxel(x - 1, surfaceY + 3, z, green)
+                this.chunkManager.setVoxel(x - 1, surfaceY + 4, z, green)
+                this.chunkManager.setVoxel(x - 1, surfaceY + 5, z, green)
+                this.chunkManager.setVoxel(x, surfaceY + 3, z - 1, green)
+                this.chunkManager.setVoxel(x, surfaceY + 4, z - 1, green)
+                this.chunkManager.setVoxel(x, surfaceY + 5, z - 1, green)
+
+                this.chunkManager.setVoxel(x - 1, surfaceY + 4, z - 1, green)
+                this.chunkManager.setVoxel(x - 1, surfaceY + 4, z + 1, green)
+                this.chunkManager.setVoxel(x + 1, surfaceY + 4, z - 1, green)
+                this.chunkManager.setVoxel(x + 1, surfaceY + 4, z + 1, green)
+
+                this.chunkManager.setVoxel(x, surfaceY + 4, z - 2, green)
+                this.chunkManager.setVoxel(x, surfaceY + 4, z + 2, green)
+                this.chunkManager.setVoxel(x + 2, surfaceY + 4, z, green)
+                this.chunkManager.setVoxel(x - 2, surfaceY + 4, z, green)
+            }
+
+            // // if spawning a tree next to a campfire then fiery leaves
+            // if ((this.chunkManager.getVoxel(x + 3, surfaceY + 2, z) !== null && this.colorsEqual(this.chunkManager.getVoxel(x + 3, surfaceY + 2, z), fireColors[0])) ||
+            //     (this.chunkManager.getVoxel(x + 3, surfaceY + 2, z) !== null && this.colorsEqual(this.chunkManager.getVoxel(x + 3, surfaceY + 2, z), fireColors[1])) ||
+            //     (this.chunkManager.getVoxel(x + 3, surfaceY + 2, z) !== null && this.colorsEqual(this.chunkManager.getVoxel(x + 3, surfaceY + 2, z), fireColors[2])) ||
+            //     (this.chunkManager.getVoxel(x - 3, surfaceY + 2, z) !== null && this.colorsEqual(this.chunkManager.getVoxel(x - 3, surfaceY + 2, z), fireColors[0])) ||
+            //     (this.chunkManager.getVoxel(x - 3, surfaceY + 2, z) !== null && this.colorsEqual(this.chunkManager.getVoxel(x - 3, surfaceY + 2, z), fireColors[1])) ||
+            //     (this.chunkManager.getVoxel(x - 3, surfaceY + 2, z) !== null && this.colorsEqual(this.chunkManager.getVoxel(x - 3, surfaceY + 2, z), fireColors[2])) ||
+            //     (this.chunkManager.getVoxel(x, surfaceY + 2, z - 3) !== null && this.colorsEqual(this.chunkManager.getVoxel(x, surfaceY + 2, z - 3), fireColors[0])) ||
+            //     (this.chunkManager.getVoxel(x, surfaceY + 2, z - 3) !== null && this.colorsEqual(this.chunkManager.getVoxel(x, surfaceY + 2, z - 3), fireColors[1])) ||
+            //     (this.chunkManager.getVoxel(x, surfaceY + 2, z - 3) !== null && this.colorsEqual(this.chunkManager.getVoxel(x, surfaceY + 2, z - 3), fireColors[2])) ||
+            //     (this.chunkManager.getVoxel(x, surfaceY + 2, z + 3) !== null && this.colorsEqual(this.chunkManager.getVoxel(x, surfaceY + 2, z + 3), fireColors[0])) ||
+            //     (this.chunkManager.getVoxel(x, surfaceY + 2, z + 3) !== null && this.colorsEqual(this.chunkManager.getVoxel(x, surfaceY + 2, z + 3), fireColors[1])) ||
+            //     (this.chunkManager.getVoxel(x, surfaceY + 2, z + 3) !== null && this.colorsEqual(this.chunkManager.getVoxel(x, surfaceY + 2, z + 3), fireColors[2]))) {
+            //         this.chunkManager.setVoxel(x, surfaceY + 6, z, Math.round(Math.random() + 2))
+            //         this.chunkManager.setVoxel(x + 1, surfaceY + 3, z, green)
+            //         this.chunkManager.setVoxel(x + 1, surfaceY + 4, z, green)
+            //         this.chunkManager.setVoxel(x + 1, surfaceY + 5, z, green)
+            //         this.chunkManager.setVoxel(x, surfaceY + 3, z + 1, green)
+            //         this.chunkManager.setVoxel(x, surfaceY + 4, z + 1, green)
+            //         this.chunkManager.setVoxel(x, surfaceY + 5, z + 1, green)
+            //         this.chunkManager.setVoxel(x - 1, surfaceY + 3, z, green)
+            //         this.chunkManager.setVoxel(x - 1, surfaceY + 4, z, green)
+            //         this.chunkManager.setVoxel(x - 1, surfaceY + 5, z, green)
+            //         this.chunkManager.setVoxel(x, surfaceY + 3, z - 1, green)
+            //         this.chunkManager.setVoxel(x, surfaceY + 4, z - 1, green)
+            //         this.chunkManager.setVoxel(x, surfaceY + 5, z - 1, green)
+
+            //         this.chunkManager.setVoxel(x - 1, surfaceY + 4, z - 1, green)
+            //         this.chunkManager.setVoxel(x - 1, surfaceY + 4, z + 1, green)
+            //         this.chunkManager.setVoxel(x + 1, surfaceY + 4, z - 1, green)
+            //         this.chunkManager.setVoxel(x + 1, surfaceY + 4, z + 1, green)
+
+            //         this.chunkManager.setVoxel(x, surfaceY + 4, z - 2, green)
+            //         this.chunkManager.setVoxel(x, surfaceY + 4, z + 2, green)
+            //         this.chunkManager.setVoxel(x + 2, surfaceY + 4, z, green)
+            //         this.chunkManager.setVoxel(x - 2, surfaceY + 4, z, green)
+            //     } else {
+            //         // Leaves
+            //         this.chunkManager.setVoxel(x, surfaceY + 6, z, green)
+            //         this.chunkManager.setVoxel(x + 1, surfaceY + 3, z, green)
+            //         this.chunkManager.setVoxel(x + 1, surfaceY + 4, z, green)
+            //         this.chunkManager.setVoxel(x + 1, surfaceY + 5, z, green)
+            //         this.chunkManager.setVoxel(x, surfaceY + 3, z + 1, green)
+            //         this.chunkManager.setVoxel(x, surfaceY + 4, z + 1, green)
+            //         this.chunkManager.setVoxel(x, surfaceY + 5, z + 1, green)
+            //         this.chunkManager.setVoxel(x - 1, surfaceY + 3, z, green)
+            //         this.chunkManager.setVoxel(x - 1, surfaceY + 4, z, green)
+            //         this.chunkManager.setVoxel(x - 1, surfaceY + 5, z, green)
+            //         this.chunkManager.setVoxel(x, surfaceY + 3, z - 1, green)
+            //         this.chunkManager.setVoxel(x, surfaceY + 4, z - 1, green)
+            //         this.chunkManager.setVoxel(x, surfaceY + 5, z - 1, green)
+
+            //         this.chunkManager.setVoxel(x - 1, surfaceY + 4, z - 1, green)
+            //         this.chunkManager.setVoxel(x - 1, surfaceY + 4, z + 1, green)
+            //         this.chunkManager.setVoxel(x + 1, surfaceY + 4, z - 1, green)
+            //         this.chunkManager.setVoxel(x + 1, surfaceY + 4, z + 1, green)
+
+            //         this.chunkManager.setVoxel(x, surfaceY + 4, z - 2, green)
+            //         this.chunkManager.setVoxel(x, surfaceY + 4, z + 2, green)
+            //         this.chunkManager.setVoxel(x + 2, surfaceY + 4, z, green)
+            //         this.chunkManager.setVoxel(x - 2, surfaceY + 4, z, green)
+            //     }
+        }
+    }
+
+    createCampfire(x, z, surfaceY, buildHeight) {
+        let brown = [112/255, 76/255, 29/255]
+        let yellow = [222/255, 209/255, 33/255]
+        let orange = [222/255, 58/255, 33/255]
+        if (surfaceY + 3 <= buildHeight) {
+            // Wood Base
+            this.chunkManager.setVoxel(x, surfaceY + 1, z, brown)
+            this.chunkManager.setVoxel(x + 1, surfaceY + 1, z + 1, brown)
+            this.chunkManager.setVoxel(x + 1, surfaceY + 1, z - 1, brown)
+            this.chunkManager.setVoxel(x - 1, surfaceY + 1, z + 1, brown)
+            this.chunkManager.setVoxel(x - 1, surfaceY + 1, z - 1, brown)
+            
+            // Flame
+            this.chunkManager.setVoxel(x, surfaceY + 2, z, yellow)
+            this.chunkManager.setVoxel(x + 1, surfaceY + 2, z, yellow)
+            this.chunkManager.setVoxel(x, surfaceY + 2, z + 1, yellow)
+            this.chunkManager.setVoxel(x - 1, surfaceY + 2, z, yellow)
+            this.chunkManager.setVoxel(x, surfaceY + 2, z - 1, yellow)
+            this.chunkManager.setVoxel(x, surfaceY + 3, z, orange)
+
+            let zero = vec3.create()
+            this.campfireEmitters.push(new Emitter([x, surfaceY + 4, z], [2, 1, 2], 3, 0.2, [0, 1, 0], 0.2, zero, 0.1, false, 2, 0.5, [1, 0, 0], 1.5, 120, 0.2, [0.5, 0.5, 0.5], [0.4, 0.4, 0.4], 8, this.shaders[6]))
+            this.campfireEmitters[this.campfireEmitters.length - 1].enable()
         }
     }
 
@@ -565,11 +745,16 @@ class WebGlApp
         this.snow.update(delta_time, gl)
         this.smoke.update(delta_time, gl)
 
+
         for (let i = 0; i < this.oneshotEmitters.length; i++) {
             this.oneshotEmitters[i].update( delta_time, gl )
             if (this.oneshotEmitters[i].isDone()) {
                 this.oneshotEmitters.splice(i, 1)
             }
+        }
+
+        for (let i = 0; i < this.campfireEmitters.length; i++) {
+            this.campfireEmitters[i].update(delta_time, gl)
         }
 
         for (let i of this.lights) {
@@ -579,24 +764,25 @@ class WebGlApp
 
         // console.log(this.up)
         
-        console.log(this.weather_id)
-        if (this.weather_id < 2) {
-            const pos = raycast(this.chunkManager, this.eye, [0, 1, 0], 10000)
-            if (pos != null) {
-                let color = this.chunkManager.getVoxel(pos[0], pos[1], pos[2])
-                //console.log(color === undefined)
-                if (color !== undefined) {
-                    // console.log("color: " + color)
-                    if (this.colorsEqual(color, [255/255, 255/255, 255/255])) {
-                        this.setWeather(1)
-                    } else {
-                        this.setWeather(0)
-                    }
-                }
-            }
-        } else {
-            this.setWeather(2)
-        }
+
+        // not working locational weather code
+        // if (this.weather_id < 2) {
+        //     const pos = raycast(this.chunkManager, this.eye, [0, 1, 0], 10000)
+        //     if (pos != null) {
+        //         let color = this.chunkManager.getVoxel(pos[0], pos[1], pos[2])
+        //         //console.log(color === undefined)
+        //         if (color !== undefined) {
+        //             // console.log("color: " + color)
+        //             if (this.colorsEqual(color, [255/255, 255/255, 255/255])) {
+        //                 this.setWeather(1)
+        //             } else {
+        //                 this.setWeather(0)
+        //             }
+        //         }
+        //     }
+        // } else {
+        //     this.setWeather(2)
+        // }
     }
 
     /**
@@ -985,6 +1171,10 @@ class WebGlApp
         this.weathers[this.weather_id].render( gl )
 
         this.smoke.render( gl )
+
+        for (let i = 0; i < this.campfireEmitters.length; i++) {
+            this.campfireEmitters[i].render( gl )
+        }
 
         // Render the scene
         if (this.scene) this.scene.render( gl )
