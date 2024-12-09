@@ -70,18 +70,18 @@ class VoxelChunk {
                     // decide which faces to push
                     const toPush = new Set()
                     // TODO
-                    if (chunkManager.getVoxel(x, y-1, z) == null)
-                        toPush.add(0)
-                    if (chunkManager.getVoxel(x-1, y, z) == null)
-                        toPush.add(1)
-                    if (chunkManager.getVoxel(x, y, z+1) == null)
-                        toPush.add(2)
-                    if (chunkManager.getVoxel(x+1, y, z) == null)
-                        toPush.add(3)
-                    if (chunkManager.getVoxel(x, y, z-1) == null)
-                        toPush.add(4)
-                    if (chunkManager.getVoxel(x, y+1, z) == null)
-                        toPush.add(5)
+                    // if (chunkManager.getVoxel(x, y-1, z) == null)
+                    //     toPush.add(0)
+                    // if (chunkManager.getVoxel(x-1, y, z) == null)
+                    //     toPush.add(1)
+                    // if (chunkManager.getVoxel(x, y, z+1) == null)
+                    //     toPush.add(2)
+                    // if (chunkManager.getVoxel(x+1, y, z) == null)
+                    //     toPush.add(3)
+                    // if (chunkManager.getVoxel(x, y, z-1) == null)
+                    //     toPush.add(4)
+                    // if (chunkManager.getVoxel(x, y+1, z) == null)
+                    //     toPush.add(5)
 
                     // push newVertices data
                     for (let i in newVertices) {
