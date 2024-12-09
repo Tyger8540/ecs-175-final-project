@@ -1,6 +1,14 @@
 # ECS 175 - Final Project
 
-*Group 21*: Ty Matson | Ben Nelson | Jason Zhou
+**Group 21**: Ty Matson | Ben Nelson | Jason Zhou
+
+### Controls
+**WASD** -- To move the camera.
+**Space** and **C** -- To move the camera up and down.
+**F** -- To destroy a block the camera is looking at.
+
+## Procedural Generation & Particle Systems
+Our project combines procedural generation and particle systems to generate a chunk of a voxel-based world. 
 
 
 
