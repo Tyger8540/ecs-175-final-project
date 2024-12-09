@@ -12,7 +12,7 @@
 **F** -- To destroy a block the camera is looking at.
 
 ## Procedural Generation & Particle Systems
-Our project combines procedural generation and particle systems to generate a chunk of a voxel-based world. There are various sliders to control the properties of terrain generation,
+Our project combines procedural generation and particle systems to generate and simulate a chunk of a voxel-based world. There are various sliders to control the properties of terrain generation,
 including:
 - **Frequency** - The frequency of noise used to generate terrain. Higher frequency will generate sharp terrain.
 - **Tree Density** - The density of tree generation in grassy areas.
