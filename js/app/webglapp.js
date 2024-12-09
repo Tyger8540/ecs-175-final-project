@@ -61,9 +61,10 @@ class WebGlApp
         })
 
         // Create the view matrix
-        this.eye     =   [2.0, 0.5, -2.0]
-        this.center  =   [0, 0, 0]
-       
+        this.eye     =   [-20, 20, -20]
+        this.center  =   [10, 10, 10]
+
+
         this.forward =   null
         this.right   =   null
         this.up      =   null
