@@ -22,25 +22,16 @@ including:
 - **Weather** - Controls weather effects.
 
 
+## References
+For our project, we used various resources to help implement our systems.
 
-## Hosting and running the project
-The project is a simple HTML+JS website with minimal dependencies. To run it we recommend using one of the following methods. You are free to use alternative means to host the site.
+“Making maps with noise functions” from Red Blob Games: https://www.redblobgames.com/maps/terrain-from-noise/
+HTML Range Slider: https://www.w3schools.com/howto/howto_js_rangeslider.asp
+HTML Buttons: https://www.w3schools.com/tags/tag_button.asp
+HTML onClick Event: https://www.w3schools.com/jsref/event_onclick.asp
+Pointer Lock System: https://developer.mozilla.org/en-US/docs/Web/API/Element/requestPointerLock
+simplex-noise API: https://www.npmjs.com/package/simplex-noise
+JavaScript Key Codes: https://www.toptal.com/developers/keycode
 
-### Using Python
-If you have python installed on your system you can use the built-in HTTP Server that ships with it to host the project.
-
-*Windows & Linux*
-```bash
-cd /path/to/the/project
-python -m http.server
-```
-
-*macOS*
-```bash
-cd /path/to/the/project
-python3 -m http.server
-```
-
-## Using VSCode Plugin
-There is a convenient plugin for VSCode that lets you host the current working directory as a website. Download and install the plugin from the VSCode marketplace:
-[https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)
+Particle system: 
+- Daniel Shiffman. “Chapter 4: Particle Systems”.  The Nature of Code. https://natureofcode.com/particles/
