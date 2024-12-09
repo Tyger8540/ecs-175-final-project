@@ -571,18 +571,24 @@ class WebGlApp
         //console.log(1/delta_time)
 
         // console.log(this.up)
-        const pos = raycast(this.chunkManager, this.eye, [0, 1, 0], 10000)
-        if (pos != null) {
-            let color = this.chunkManager.getVoxel(pos[0], pos[1], pos[2])
-            //console.log(color === undefined)
-            if (color !== undefined) {
-                // console.log("color: " + color)
-                if (this.colorsEqual(color, [255/255, 255/255, 255/255])) {
-                    this.setWeather(1)
-                } else {
-                    this.setWeather(0)
+        
+        console.log(this.weather_id)
+        if (this.weather_id < 2) {
+            const pos = raycast(this.chunkManager, this.eye, [0, 1, 0], 10000)
+            if (pos != null) {
+                let color = this.chunkManager.getVoxel(pos[0], pos[1], pos[2])
+                //console.log(color === undefined)
+                if (color !== undefined) {
+                    // console.log("color: " + color)
+                    if (this.colorsEqual(color, [255/255, 255/255, 255/255])) {
+                        this.setWeather(1)
+                    } else {
+                        this.setWeather(0)
+                    }
                 }
             }
+        } else {
+            this.setWeather(2)
         }
     }
 
