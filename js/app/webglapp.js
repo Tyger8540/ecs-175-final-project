@@ -13,7 +13,7 @@ import { Scene, SceneNode } from './scene.js'
 import { ProcGen } from '../../procgen.js'
 import ChunkManager from '../../voxel/chunkmanager.js'
 
-import Emitter from "../../particles/emitter.js"
+import { Emitter, OneShotEmitter } from "../../particles/emitter.js"
 import { Light, AmbientLight, DirectionalLight, PointLight } from "./light.js"
 import raycast from '../../voxel/raycast.js'
 
@@ -101,7 +101,7 @@ class WebGlApp
 
         this.procGen = new ProcGen()
 
-
+        this.oneshotEmitters = [ ]
 
         var zero = vec3.create()
         this.rain = new Emitter(vec3.fromValues(0, 20, 0), vec3.fromValues(50, 0, 50), 200, 0.1, vec3.fromValues(-0.2, -1, 0), 0.1, vec3.fromValues(0, -20, 0), 0.5, true, 0, 0, vec3.fromValues(0, 1, 0),
