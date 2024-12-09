@@ -116,9 +116,6 @@ class WebGlApp
         0, 0, 60, zero, zero, 1, this.shaders[6]
         )
 
-        this.smoke = new Emitter([-1, 0, -1], [2, 1, 2], 3, 0.2, [0, 1, 0], 0.2, zero, 0.1, false, 2, 0.5, [1, 0, 0], 1.5, 120, 0.2, [0.5, 0.5, 0.5], [0.4, 0.4, 0.4], 16, this.shaders[6])
-        this.smoke.enable()
-
         this.campfireEmitters = []
 
         this.weathers = [this.rain, this.snow, this.null_weather]
@@ -743,7 +740,6 @@ class WebGlApp
 
         this.rain.update(delta_time, gl)
         this.snow.update(delta_time, gl)
-        this.smoke.update(delta_time, gl)
 
 
         for (let i = 0; i < this.oneshotEmitters.length; i++) {
@@ -1169,8 +1165,6 @@ class WebGlApp
         this.chunkManager.render(gl)
 
         this.weathers[this.weather_id].render( gl )
-
-        this.smoke.render( gl )
 
         for (let i = 0; i < this.campfireEmitters.length; i++) {
             this.campfireEmitters[i].render( gl )
