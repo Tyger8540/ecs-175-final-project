@@ -4,7 +4,9 @@
 
 ### Controls
 **WASD** -- To move the camera.
+
 **Space** and **C** -- To move the camera up and down.
+
 **F** -- To destroy a block the camera is looking at.
 
 ## Procedural Generation & Particle Systems
