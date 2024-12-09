@@ -3,6 +3,8 @@
 **Group 21**: Ty Matson | Ben Nelson | Jason Zhou
 
 ### Controls
+**Mouse** -- To look around.
+
 **WASD** -- To move the camera.
 
 **Space** and **C** -- To move the camera up and down.
