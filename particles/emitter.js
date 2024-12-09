@@ -204,11 +204,16 @@ class OneShotEmitter extends Emitter {
     }
     
     isDone() {
-        if ( this.num_particles <= 0 && this.list_particles.length <= 0 ) {
+        if ( this.num_particles <= 0 && this.list_particles.length <= 0 && this.timer > 0 ) {
             return true
         } else {
             return false
         }
+    }
+
+    enable() {
+        this.active = true
+        this.timer = this.period
     }
 
 }

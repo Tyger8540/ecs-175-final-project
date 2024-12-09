@@ -565,6 +565,13 @@ class WebGlApp
         this.snow.update(delta_time, gl)
         this.smoke.update(delta_time, gl)
 
+        for (let i = 0; i < this.oneshotEmitters.length; i++) {
+            this.oneshotEmitters[i].update( delta_time, gl )
+            if (this.oneshotEmitters[i].isDone()) {
+                this.oneshotEmitters.splice(i, 1)
+            }
+        }
+
         for (let i of this.lights) {
             i.update()
         }
@@ -833,8 +840,15 @@ class WebGlApp
         if (Input.isKeyDown('f')) {
             const pos = raycast(this.chunkManager, this.eye, this.forward, 10000)
             if (pos != null) {
-                this.chunkManager.setVoxel(pos[0], pos[1], pos[2], null)
-                // TODO: smoke particles
+                if (this.chunkManager.setVoxel(pos[0], pos[1], pos[2], null)) {
+                    // Destruction smoke
+                    this.oneshotEmitters.push(new OneShotEmitter(pos, [0.3, 0.3, 0.3], 5, 0.5, [0, 1, 0], Math.PI, [0, 0, 0], 2, true, 0, 0, [0, 0, 0], 0, 20, 20, 0.005, [1, 1, 1],
+                        [0.3, 0.3, 0.3], 0.3, this.shaders[6]
+                        ))
+                    this.oneshotEmitters[this.oneshotEmitters.length - 1].enable()
+                    //console.log(this.oneshotEmitters)
+                }
+
                 this.chunkManager.chunks[this.chunkManager.getChunkIndex(pos[0], pos[1], pos[2])].regenerateBuffers(this.gl, this.chunkManager.shader)
             }
         }
@@ -979,6 +993,9 @@ class WebGlApp
             i.render( gl )
         }
 
+        for (let i of this.oneshotEmitters) {
+            i.render( gl )
+        }
     }
 
 }
