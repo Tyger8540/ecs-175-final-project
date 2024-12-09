@@ -52,7 +52,7 @@ class ChunkManager {
 
     regenerateAllBuffers() {
         for (let chunk of this.chunks) {
-            chunk.regenerateBuffers(chunk.gl, chunk.shader)
+            chunk.regenerateBuffers(chunk.gl, chunk.shader, this)
         }
     }
 

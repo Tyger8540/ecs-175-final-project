@@ -1031,7 +1031,7 @@ class WebGlApp
                     //console.log(this.oneshotEmitters)
                 }
 
-                this.chunkManager.chunks[this.chunkManager.getChunkIndex(pos[0], pos[1], pos[2])].regenerateBuffers(this.gl, this.chunkManager.shader)
+                this.chunkManager.chunks[this.chunkManager.getChunkIndex(pos[0], pos[1], pos[2])].regenerateBuffers(this.gl, this.chunkManager.shader, this.chunkManager)
             }
         }
 

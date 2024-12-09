@@ -33,7 +33,7 @@ class VoxelChunk {
         this.voxels[this.getIndex(localX, localY, localZ)] = color
     }
 
-    regenerateBuffers(gl, shader) {
+    regenerateBuffers(gl, shader, chunkManager) {
         // create vertex and index arrays
         this.vertices = []
         for (let z = 0; z < CHUNK_SIZE; z++) {
@@ -67,15 +67,36 @@ class VoxelChunk {
                         [0, 1, 0], [1, 1, 1], [0, 1, 1],
                     ]
 
+                    // decide which faces to push
+                    const toPush = new Set()
+                    // TODO
+                    if (chunkManager.getVoxel(x, y-1, z) == null)
+                        toPush.add(0)
+                    if (chunkManager.getVoxel(x-1, y, z) == null)
+                        toPush.add(1)
+                    if (chunkManager.getVoxel(x, y, z+1) == null)
+                        toPush.add(2)
+                    if (chunkManager.getVoxel(x+1, y, z) == null)
+                        toPush.add(3)
+                    if (chunkManager.getVoxel(x, y, z-1) == null)
+                        toPush.add(4)
+                    if (chunkManager.getVoxel(x, y+1, z) == null)
+                        toPush.add(5)
+
                     // push newVertices data
                     for (let i in newVertices) {
+                        const faceId = Math.floor(i / 6)
+
+                        // if (!toPush.has(faceId))
+                        //     continue
+
                         const element = newVertices[i]
 
                         // push position relative to (x, y, z)
                         this.vertices.push(...[element[0] + x, element[1] + y, element[2] + z])
 
-                        // push faceId
-                        switch (Math.floor(i / 6)) {
+                        // push normals
+                        switch (faceId) {
                             case 0:
                                 //this.vertices.push(0)
                                 this.vertices.push(...[0, -1, 0])
@@ -101,7 +122,6 @@ class VoxelChunk {
                                 this.vertices.push(...[0, 1, 0])
                                 break
                         }
-
 
                         // push color
                         this.vertices.push(...color)
