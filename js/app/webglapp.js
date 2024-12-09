@@ -14,6 +14,7 @@ import { ProcGen } from '../../procgen.js'
 import ChunkManager from '../../voxel/chunkmanager.js'
 
 import Emitter from "../../particles/emitter.js"
+import raycast from '../../voxel/raycast.js'
 
 
 /**
@@ -769,6 +770,16 @@ class WebGlApp
             vec3.add(this.eye, this.eye, translation);
             vec3.add(this.center, this.eye, this.forward);
             view_dirty = true;
+        }
+
+        // Control - Destroy voxel at crosshair
+        if (Input.isKeyDown('f')) {
+            const pos = raycast(this.chunkManager, this.eye, this.forward, 10000)
+            if (pos != null) {
+                this.chunkManager.setVoxel(pos[0], pos[1], pos[2], null)
+                // TODO: smoke particles
+                this.chunkManager.chunks[this.chunkManager.getChunkIndex(pos[0], pos[1], pos[2])].regenerateBuffers(this.gl, this.chunkManager.shader)
+            }
         }
 
         // Update view matrix if needed

@@ -6,6 +6,7 @@ class ChunkManager {
      * @param {Number} size How many chunks long the world should be
      */
     constructor(gl, shader, size, height) {
+        this.shader = shader
         this.size = size
         this.height = height
         this.chunks = Array(size * height * size)
@@ -30,7 +31,19 @@ class ChunkManager {
         const localX = globalX % CHUNK_SIZE
         const localY = globalY % CHUNK_SIZE
         const localZ = globalZ % CHUNK_SIZE
-        this.chunks[this.getChunkIndex(globalX, globalY, globalZ)].setVoxel(localX, localY, localZ, color)
+        const chunk = this.chunks[this.getChunkIndex(globalX, globalY, globalZ)]
+        if (chunk != null)
+            chunk.setVoxel(localX, localY, localZ, color)
+    }
+
+    getVoxel(globalX, globalY, globalZ, color) {
+        const localX = globalX % CHUNK_SIZE
+        const localY = globalY % CHUNK_SIZE
+        const localZ = globalZ % CHUNK_SIZE
+        const chunk = this.chunks[this.getChunkIndex(globalX, globalY, globalZ)]
+        if (chunk != null)
+            return chunk.getVoxel(localX, localY, localZ, color)
+        return null
     }
 
     regenerateAllBuffers() {
