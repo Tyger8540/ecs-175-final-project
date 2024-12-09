@@ -28,15 +28,9 @@ function raycast(chunkManager, start, direction, maxDistance) {
     let currTMaxX = tMaxX, currTMaxY = tMaxY, currTMaxZ = tMaxZ;
 
     while (distanceTraveled <= maxDistance) {
-        // Check bounds
-        if (x >= 0 && x < chunkManager.size * CHUNK_SIZE && y >= 0 && y < chunkManager.height * CHUNK_SIZE && z >= 0 && z < chunkManager.size * CHUNK_SIZE) {
-            // Check if the current voxel is a hit
-            if (chunkManager.getVoxel(x, y, z) !== null) {
-                return [x, y, z]; // Hit found
-            }
-        } else {
-            // Out of bounds, terminate
-            return null;
+        // Check if the current voxel is a hit
+        if (chunkManager.getVoxel(x, y, z) !== null) {
+            return [x, y, z]; // Hit found
         }
 
         // Determine the next voxel to step into
