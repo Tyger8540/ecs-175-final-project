@@ -1,5 +1,9 @@
 # ECS 175 - Final Project
 
+*Group 21*: Ty Matson | Ben Nelson | Jason Zhou
+
+
+
 ## Hosting and running the project
 The project is a simple HTML+JS website with minimal dependencies. To run it we recommend using one of the following methods. You are free to use alternative means to host the site.
 
