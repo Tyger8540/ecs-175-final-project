@@ -93,6 +93,25 @@
                 </script>
             </div>
             <div class="setting">
+                <h3>Campfire Density</h3>
+                <div class="setting-item-container">
+                    <input type="range" min="0" max="20" value="5" class="slider" id="campfireDensitySlider">
+                </div>
+                <p><span id="campfireDensityValue"></span></p>
+                <script>
+                    var campfireDensitySlider = document.getElementById("campfireDensitySlider");
+                    var campfireDensityOutput = document.getElementById("campfireDensityValue");
+                    campfireDensityOutput.innerHTML = campfireDensitySlider.value;
+                    
+                    function updateCampfireDensitySliderValue() {
+                        campfireDensityOutput.innerHTML = this.value;
+                    }
+
+                    campfireDensitySlider.addEventListener("input", updateCampfireDensitySliderValue);
+                    campfireDensitySlider.addEventListener("change", updateCampfireDensitySliderValue);
+                </script>
+            </div>
+            <div class="setting">
                 <h3>Terrain Width</h3>
                 <div class="setting-item-container">
                     <input type="range" min="1" max="10" value="5" class="slider" id="widthSlider">
@@ -133,21 +152,24 @@
             <div class="setting">
                 <h3>Weather</h3>
                 <div class="setting-item-container">
-                    <input type="range" min="0" max="1" value="0" class="slider" id="weatherSlider">
+                    <input type="range" min="0" max="2" value="0" class="slider" id="weatherSlider">
                 </div>
                 <p><span id="weatherValue"></span></p>
                 <script>
                     var weatherSlider = document.getElementById("weatherSlider");
                     var weatherOutput = document.getElementById("weatherValue");
-                    weatherOutput.innerHTML = "Off";
+                    weatherOutput.innerHTML = "Sunny";
                     
                     function updateWeatherSliderValue() {
-                        if (weatherOutput.innerHTML == "Off") {
-                            weatherOutput.innerHTML = "On";
+                        if (this.value == 0) {
+                            weatherOutput.innerHTML = "Sunny";
+                            setWeather(2);
+                        } else if (this.value == 1) {
+                            weatherOutput.innerHTML = "Rain";
                             setWeather(0);
                         } else {
-                            weatherOutput.innerHTML = "Off";
-                            setWeather(2);
+                            weatherOutput.innerHTML = "Snow";
+                            setWeather(1);
                         }
                     }
 
