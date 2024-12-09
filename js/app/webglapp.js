@@ -120,20 +120,23 @@ class WebGlApp
         this.smoke.enable()
 
         this.weathers = [this.rain, this.snow, this.null_weather]
-        this.weather_id = 0
+        var weatherSliderSlider = document.getElementById("weatherSlider")
+        this.weather_id = weatherSlider.value
 
-        this.setWeather(0)
+        if (this.weather_id == 0) {
+            this.setWeather(2)
+        } else {
+            this.setWeather(0)
+        }
 
-
-        let width = 16
-        let height = 16
-        let values = this.procGen.createNoiseMap(width, height)
         this.generateTerrain()
 
         this.movementX = 0
         this.movementY = 0
+    
         this.yaw
         this.pitch
+
     }
 
 
@@ -566,6 +569,21 @@ class WebGlApp
             i.update()
         }
         //console.log(1/delta_time)
+
+        // console.log(this.up)
+        const pos = raycast(this.chunkManager, this.eye, [0, 1, 0], 10000)
+        if (pos != null) {
+            let color = this.chunkManager.getVoxel(pos[0], pos[1], pos[2])
+            //console.log(color === undefined)
+            if (color !== undefined) {
+                // console.log("color: " + color)
+                if (this.colorsEqual(color, [255/255, 255/255, 255/255])) {
+                    this.setWeather(1)
+                } else {
+                    this.setWeather(0)
+                }
+            }
+        }
     }
 
     /**

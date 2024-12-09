@@ -55,6 +55,10 @@ class App
         window.setMovement = (movementX, movementY) => {
             this.impl.setMovement(movementX, movementY);
         };
+
+        window.setWeather = (index) => {
+            this.impl.setWeather(index);
+        };
     }
 
     /**

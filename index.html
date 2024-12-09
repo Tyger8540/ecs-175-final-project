@@ -114,7 +114,7 @@
             <div class="setting">
                 <h3>Terrain Height</h3>
                 <div class="setting-item-container">
-                    <input type="range" min="1" max="2" value="2" class="slider" id="heightSlider">
+                    <input type="range" min="1" max="2" value="1" class="slider" id="heightSlider">
                 </div>
                 <p><span id="heightValue"></span></p>
                 <script>
@@ -128,6 +128,31 @@
 
                     heightSlider.addEventListener("input", updateHeightSliderValue);
                     heightSlider.addEventListener("change", updateHeightSliderValue);
+                </script>
+            </div>
+            <div class="setting">
+                <h3>Weather</h3>
+                <div class="setting-item-container">
+                    <input type="range" min="0" max="1" value="0" class="slider" id="weatherSlider">
+                </div>
+                <p><span id="weatherValue"></span></p>
+                <script>
+                    var weatherSlider = document.getElementById("weatherSlider");
+                    var weatherOutput = document.getElementById("weatherValue");
+                    weatherOutput.innerHTML = "Off";
+                    
+                    function updateWeatherSliderValue() {
+                        if (weatherOutput.innerHTML == "Off") {
+                            weatherOutput.innerHTML = "On";
+                            setWeather(0);
+                        } else {
+                            weatherOutput.innerHTML = "Off";
+                            setWeather(2);
+                        }
+                    }
+
+                    weatherSlider.addEventListener("input", updateWeatherSliderValue);
+                    // weatherSlider.addEventListener("change", updateWeatherSliderValue);
                 </script>
             </div>
             <button class="button" onclick="generateTerrain()">Generate Terrain</button>
@@ -214,28 +239,6 @@
     </div>
     <noscript>You need to enable JavaScript to view the full site.</noscript>
     <script type="module" src="js/main.js"></script>
-    <!-- <script type="module">
-        import { ProcGen } from './procgen.js';
-        import { generateTerrain } from './js/app/webglapp.js';
-
-        const procGen = new ProcGen();
-
-        // Reusable function for generating noise maps
-        function generateNoiseMap() {
-            procGen.createNoiseMap(16, 16);
-        }
-
-        // Generate noise maps on initial load
-        // generateNoiseMap();
-
-        // Function to regenerate the world
-        function generateWorld() {
-            generateTerrain(); // Reuse the same logic
-        }
-
-        // Attach the generateWorld function to the global scope
-        window.generateWorld = generateWorld;
-    </script> -->
 </body>
 
 </html>
