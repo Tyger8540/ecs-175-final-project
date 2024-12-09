@@ -14,6 +14,7 @@ import { ProcGen } from '../../procgen.js'
 import ChunkManager from '../../voxel/chunkmanager.js'
 
 import Emitter from "../../particles/emitter.js"
+import { Light, AmbientLight, DirectionalLight, PointLight } from "./light.js"
 import raycast from '../../voxel/raycast.js'
 
 
@@ -41,7 +42,7 @@ class WebGlApp
         this.shaders = shaders // Collection of all shaders
         this.box_shader = this.shaders[7]
         this.plane_shader = this.shaders[5]
-        this.light_shader = this.shaders[this.shaders.length - 1]
+        this.light_shader = this.shaders[3]
         this.active_shader = 1
         
         // Create a box instance and create a variable to track its rotation
@@ -49,6 +50,11 @@ class WebGlApp
 
         this.plane = new Plane( gl, this.plane_shader )
         this.animation_step = 0
+
+        this.lights = []
+        this.lights.push(new AmbientLight(0, [0.6, 0.9, 1.0], 0.4, this.shaders[4], gl, this.light_shader))
+        this.lights.push(new DirectionalLight(0, [1.0, 1.0, 0.7], 1, this.shaders[4], gl, this.light_shader))
+        //console.log(this.lights)
 
         // Declare a variable to hold a Scene
         // Scene files can be loaded through the UI (see below)
@@ -62,9 +68,10 @@ class WebGlApp
         })
 
         // Create the view matrix
-        this.eye     =   [2.0, 0.5, -2.0]
-        this.center  =   [0, 0, 0]
-       
+        this.eye     =   [-20, 20, -20]
+        this.center  =   [10, 10, 10]
+
+
         this.forward =   null
         this.right   =   null
         this.up      =   null
@@ -96,14 +103,26 @@ class WebGlApp
 
 
 
-
         var zero = vec3.create()
-        this.emitter = new Emitter(vec3.fromValues(0, 20, 0), vec3.fromValues(50, 0, 50), 200, 0.8, vec3.fromValues(-0.2, -1, 0), 0.1, vec3.fromValues(0, -20, 0), 0.5, true, 0, 0, vec3.fromValues(0, 1, 0),
-            0, 600, 0.002, vec3.fromValues(0.2, 0.2, 1.0), vec3.fromValues(0.05, 0.05, 1), 1, this.shaders[6]
+        this.rain = new Emitter(vec3.fromValues(0, 20, 0), vec3.fromValues(50, 0, 50), 200, 0.1, vec3.fromValues(-0.2, -1, 0), 0.1, vec3.fromValues(0, -20, 0), 0.5, true, 0, 0, vec3.fromValues(0, 1, 0),
+            0, 600, 0.002, [0.2, 0.2, 1.0], vec3.fromValues(0.05, 0.05, 1), 1, this.shaders[6]
             )
 
+        this.snow = new Emitter(vec3.fromValues(0, 20, 0), vec3.fromValues(200, 0, 200), 12, 0.8, vec3.fromValues(-0.2, -1, 0), 0.05, vec3.fromValues(0, 0, 0), 0.1, true, 0, 0, vec3.fromValues(0, 1, 0),
+            0, 1600, 0.005, [0.9, 0.9, 0.9], vec3.fromValues(0.15, 0.15, 0.15), 8, this.shaders[6]
+            )
+    
+        this.null_weather = new Emitter(zero, zero, 0, 0, zero, 0, 0, 0.0, true, 0, 0, zero,
+        0, 0, 60, zero, zero, 1, this.shaders[6]
+        )
 
+        this.smoke = new Emitter([-1, 0, -1], [2, 1, 2], 3, 0.2, [0, 1, 0], 0.2, zero, 0.1, false, 2, 0.5, [1, 0, 0], 1.5, 120, 0.2, [0.5, 0.5, 0.5], [0.4, 0.4, 0.4], 16, this.shaders[6])
+        this.smoke.enable()
 
+        this.weathers = [this.rain, this.snow, this.null_weather]
+        this.weather_id = 0
+
+        this.setWeather(0)
 
 
         let width = 16
@@ -431,6 +450,13 @@ class WebGlApp
         this.movementY = moveY
     }
 
+
+    setWeather( id ) {
+        this.weathers[this.weather_id].disable()
+        this.weather_id = id
+        this.weathers[this.weather_id].enable()
+    }
+
     /**
      * Sets up GL flags
      * In this assignment we are drawing 3D data, so we need to enable the flag 
@@ -532,7 +558,13 @@ class WebGlApp
                 break
         }
 
-        this.emitter.update(delta_time, gl)
+        this.rain.update(delta_time, gl)
+        this.snow.update(delta_time, gl)
+        this.smoke.update(delta_time, gl)
+
+        for (let i of this.lights) {
+            i.update()
+        }
         //console.log(1/delta_time)
     }
 
@@ -789,7 +821,8 @@ class WebGlApp
             // this.updateViewSpaceVectors()
 
             this.view = mat4.lookAt(mat4.create(), this.eye, this.center, this.up)
-            this.emitter.update_position(this.eye)
+            this.rain.update_position(this.eye)
+            this.snow.update_position(this.eye)
             this.box.update_position(this.eye)
 
             for (let shader of this.shaders) {
@@ -911,10 +944,16 @@ class WebGlApp
         // render chunk manager
         this.chunkManager.render(gl)
 
-        this.emitter.render( gl )
+        this.weathers[this.weather_id].render( gl )
+
+        this.smoke.render( gl )
 
         // Render the scene
         if (this.scene) this.scene.render( gl )
+
+        for (let i of this.lights) {
+            i.render( gl )
+        }
 
     }
 

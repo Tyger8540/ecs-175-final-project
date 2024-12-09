@@ -5,14 +5,16 @@ const CHUNK_SIZE = 16
 
 // chunk is a 3d array of voxel colors. null means voxel is air
 class VoxelChunk {
+
     constructor(gl, shader) {
         // webgl
         this.gl = gl
         this.shader = shader
         this.vertices_buffer = gl.createBuffer();
         this.vertex_array_object = gl.createVertexArray();
-        this.FACE_ELEMENT_COUNT = 2 * 3 + 1
+        this.FACE_ELEMENT_COUNT = 9
 
+        
         // voxel
         this.voxels = Array(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE).fill(null)
 
@@ -73,7 +75,33 @@ class VoxelChunk {
                         this.vertices.push(...[element[0] + x, element[1] + y, element[2] + z])
 
                         // push faceId
-                        this.vertices.push(Math.floor(i / 6))
+                        switch (Math.floor(i / 6)) {
+                            case 0:
+                                //this.vertices.push(0)
+                                this.vertices.push(...[0, -1, 0])
+                                break
+                            case 1:
+                                //this.vertices.push(0)
+                                this.vertices.push(...[-1, 0, 0])
+                                break
+                            case 2:
+                                //this.vertices.push(0)
+                                this.vertices.push(...[0, 0, 1])
+                                break
+                            case 3:
+                                //this.vertices.push(0)
+                                this.vertices.push(...[1, 0, 0])
+                                break
+                            case 4:
+                                //this.vertices.push(0)
+                                this.vertices.push(...[0, 0, -1])
+                                break
+                            case 5:
+                                //this.vertices.push(0)
+                                this.vertices.push(...[0, 1, 0])
+                                break
+                        }
+
 
                         // push color
                         this.vertices.push(...color)
@@ -81,7 +109,7 @@ class VoxelChunk {
                 }
             }
         }
-
+        
         // Creates vertex buffer object for vertex data
         gl.bindBuffer( gl.ARRAY_BUFFER, this.vertices_buffer )
         gl.bufferData( gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW )
@@ -92,16 +120,23 @@ class VoxelChunk {
         gl.bindBuffer( gl.ARRAY_BUFFER, this.vertices_buffer )
 
         let a_position = shader.getAttributeLocation( 'a_position' )
-        gl.enableVertexAttribArray(a_position)
-        gl.vertexAttribPointer(a_position, 3, gl.FLOAT, false, 4 * this.FACE_ELEMENT_COUNT, 0)
+        if (a_position != -1) {
+            gl.enableVertexAttribArray(a_position)
+            gl.vertexAttribPointer(a_position, 3, gl.FLOAT, false, 4 * this.FACE_ELEMENT_COUNT, 0)
+        }
 
-        let a_faceId = shader.getAttributeLocation( 'a_faceId' )
-        gl.enableVertexAttribArray(a_faceId)
-        gl.vertexAttribPointer(a_faceId, 1, gl.FLOAT, false, 4 * this.FACE_ELEMENT_COUNT, 4 * 3)
-
+        let a_normal = shader.getAttributeLocation( 'a_normal' )
+        if (a_normal != -1) {
+            gl.enableVertexAttribArray(a_normal)
+            gl.vertexAttribPointer(a_normal, 3, gl.FLOAT, false, 4 * this.FACE_ELEMENT_COUNT, 4 * 3)
+        }
+        
         let a_color = shader.getAttributeLocation( 'a_color' )
-        gl.enableVertexAttribArray(a_color)
-        gl.vertexAttribPointer(a_color, 3, gl.FLOAT, false, 4 * this.FACE_ELEMENT_COUNT, 4 * 4)
+        if (a_color != -1) {
+            gl.enableVertexAttribArray(a_color)
+            gl.vertexAttribPointer(a_color, 3, gl.FLOAT, false, 4 * this.FACE_ELEMENT_COUNT, 4 * 6)
+        }
+        
 
         gl.bindVertexArray( null )
         gl.bindBuffer( gl.ARRAY_BUFFER, null )
