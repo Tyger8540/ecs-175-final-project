@@ -120,16 +120,23 @@ class VoxelChunk {
         gl.bindBuffer( gl.ARRAY_BUFFER, this.vertices_buffer )
 
         let a_position = shader.getAttributeLocation( 'a_position' )
-        gl.enableVertexAttribArray(a_position)
-        gl.vertexAttribPointer(a_position, 3, gl.FLOAT, false, 4 * this.FACE_ELEMENT_COUNT, 0)
+        if (a_position != -1) {
+            gl.enableVertexAttribArray(a_position)
+            gl.vertexAttribPointer(a_position, 3, gl.FLOAT, false, 4 * this.FACE_ELEMENT_COUNT, 0)
+        }
 
         let a_normal = shader.getAttributeLocation( 'a_normal' )
-        gl.enableVertexAttribArray(a_normal)
-        gl.vertexAttribPointer(a_normal, 3, gl.FLOAT, false, 4 * this.FACE_ELEMENT_COUNT, 4 * 3)
-
+        if (a_normal != -1) {
+            gl.enableVertexAttribArray(a_normal)
+            gl.vertexAttribPointer(a_normal, 3, gl.FLOAT, false, 4 * this.FACE_ELEMENT_COUNT, 4 * 3)
+        }
+        
         let a_color = shader.getAttributeLocation( 'a_color' )
-        gl.enableVertexAttribArray(a_color)
-        gl.vertexAttribPointer(a_color, 3, gl.FLOAT, false, 4 * this.FACE_ELEMENT_COUNT, 4 * 6)
+        if (a_color != -1) {
+            gl.enableVertexAttribArray(a_color)
+            gl.vertexAttribPointer(a_color, 3, gl.FLOAT, false, 4 * this.FACE_ELEMENT_COUNT, 4 * 6)
+        }
+        
 
         gl.bindVertexArray( null )
         gl.bindBuffer( gl.ARRAY_BUFFER, null )

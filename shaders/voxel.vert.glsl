@@ -9,7 +9,6 @@ uniform mat4x4 u_m;
 uniform mat4x4 u_v;
 uniform mat4x4 u_p;
 
-flat out float o_faceId;
 out vec3 o_color;
 
 void main() {
